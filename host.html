@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Sketchy: Sketcher</title>
+		<link rel="stylesheet" href="host.css" type="text/css" />
+    	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+		<script type="text/javascript" src="host.js"></script>
+	</head>
+	<body>
+		<div id='rotate_screen'>Rotate screen!</div>
+		<div id='small_screen'>Screen too small!</div>
+		<div id='left_sidebar_container'>
+			<div id='draw_btn_container' class=btn_container>
+				<div style="top:0;left:1mm;background:green;" id="green" class=colorbtn></div>
+				<div style="top:0;left:7mm;background:blue;" id="blue" class=colorbtn></div>
+				<div style="top:0;left:13mm;background:red;" id="red" class=colorbtn></div>
+				<div style="top:6mm;left:1mm;background:yellow;" id="yellow" class=colorbtn></div>
+				<div style="top:6mm;left:7mm;background:orange;" id="orange" class=colorbtn></div>
+				<div style="top:6mm;left:13mm;background:black;" id="black" class=colorbtn></div>
+					
+				<div id='btn_colorwheel' class='btn help' style='height:10mm;'>
+				</div><input type='range' id='size_slider'>
+				</input><div id='btn_draw' class='btn help hover'>
+				</div><div id='btn_erase' class='btn help hover'>
+				</div><div id='btn_undo' class='btn help hover'>
+				</div><div id='btn_redo' class='btn help hover'></div>
+			</div>
+			<div id='options_btn_container' class=btn_container>
+				<div id='btn_save' class='btn help hover'><br><br>
+				</div><div id='btn_post' class='btn help hover'><br><br>
+				</div><br><div id='btn_mirror' class='btn help hover'><br><br>
+				</div><div id='btn_clear' class='btn help hover'><br><br>
+				</div><br><div id='btn_tribes' class='btn help'><br><br></div>
+			</div>
+		</div>
+		<div id='right_sidebar_container'>
+			<div id='view_btn_container' class=btn_container>
+				<div id='slider_scroll' class=btn><br><br>sc
+				</div><div id='btn_active' class='btn help hover'><br><br>
+				</div><br><div id='btn_posted' class='btn help hover'><br><br>
+				</div><br><div id='btn_tribe' class='btn help'><br><br></div>
+			</div>
+		</div>
+		</div>
+		<div id='canvas_container'>
+			<div id='canvas'>
+				<canvas id='canvas_layer0' width=100% height=100%></canvas>
+<!--Undo layers:<canvas id='canvas_layer1'></canvas>
+				<canvas id='canvas_layer2'></canvas>
+				<canvas id='canvas_layer3'></canvas> -->
+			</div>	
+			<img id="canvas_img"></img>
+		</div>
+	</body>
+</html>

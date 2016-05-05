@@ -1,0 +1,10 @@
+{
+  "name": "sketchy",
+  "description": "project for 132",
+  "version": "0.0.1",
+  "dependencies": {
+    "consolidate": "0.14.0",
+    "express": "3.0.x",
+    "socket.io": "^1.4.5"
+  }
+}

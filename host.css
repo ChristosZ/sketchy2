@@ -1,0 +1,142 @@
+body {
+	background-color: grey;
+	padding: 0;
+	margin: 0;
+	height: 100vh;
+	width: 100%;
+	overflow: hidden;
+	touch-action: none;
+}
+
+div {
+	padding: 0;
+	margin: 0;
+}
+
+#rotate_screen {
+	display: none;
+	position: fixed;
+	height: 100vh;
+	width: 100%;
+	z-index: 20;
+	background-color: red;
+}
+
+#small_screen {
+	display: none;
+	position: fixed;
+	height: 100vh;
+	width: 100%;
+	z-index: 20;
+	background-color: darkred;
+}
+	
+#left_sidebar_container {
+	display: inline-block;
+	width: 20mm;
+	height: 100vh;
+	float: left;
+}
+
+#right_sidebar_container {
+	display: inline-block;
+	width: 20mm;
+	height: 100vh;
+	float: right;
+}
+
+.btn_container {
+	position: absolute;
+	height: 60mm;
+	width: 20mm;
+	top: calc((100vh - 60mm) / 2);
+	line-height: 2mm;
+	text-align: center;
+}
+
+.btn{
+	display: inline-block;
+	height: 10mm;
+	width: calc((100% / 2) - 0.1mm);
+	text-align: center;
+	background-size: 100% 100%;
+}
+
+.colorbtn {
+	position: absolute;
+	width:6mm;
+	height:6mm;
+}
+
+#size_slider {
+	height: 10mm;
+	width: calc(100% - 2mm);
+	margin: 0;
+	padding: 0;
+}
+
+#canvas_container {
+	display: inline-block;
+	width: calc((100% - 40mm) / 2);
+	height: 50vh;
+	float: left;
+	background-color: grey;
+}
+
+#canvas {
+	display: inline-block;
+	height: calc((100vw - 40mm) / 4 * 3);
+	max-height: 100%;
+	width: calc(400vh / 3);
+	max-width: 100%;
+	vertical-align: middle;
+	background-color: white;
+}
+
+#canvas_layer0 {
+	width: 100%;
+	height: 100%;
+	z-index: 5;
+}
+
+#canvas_img {
+	position: absolute;
+	display: none;
+	height: calc((100vw - 20mm) / 4 * 3 * 0.9);
+	max-height: 90%;
+	width: calc(400vh / 3 * 0.9);
+	max-width: calc((100% - 20mm) * 0.9);
+	margin-top: 5vh;
+	margin-left: calc((100% - 20mm) * 0.05);
+	z-index: 5;
+}
+
+@media only screen and (max-height: 54mm) {
+	#small_screen {	display: block; }
+	#sidebar_container { display: none;	}
+	#canvas_container {	display: none; }
+}
+
+@media only screen and (orientation: portrait) {
+	#rotate_screen { display: block; }
+	#canvas_container {	display: none; }
+	#small_screen {	display: none; }
+}
+
+/*#btn_colorwheel { background-image: url('img/blue/colorwheel.png'); }*/
+#btn_draw {	background-image: url('img/blue/draw.png'); }
+#btn_erase { background-image: url('img/blue/erase.png'); }
+#btn_undo { background-image: url('img/blue/undo.png'); }
+#btn_redo { background-image: url('img/blue/redo.png'); }
+#view_drag { background-image: url('img/blue/view.png'); }
+#options_drag { background-image: url('img/blue/options.png'); }
+#btn_active { background-image: url('img/blue/draw.png'); }
+#btn_posted { background-image: url('img/blue/post.png'); }
+#btn_tribe { background-image: url('img/blue/tribe.png'); }
+#btn_save { background-image: url('img/blue/save.png'); }
+#btn_post { background-image: url('img/blue/post.png'); }
+#btn_mirror { background-image: url('img/blue/mirror.png'); }
+#btn_clear { background-image: url('img/blue/clear.png'); }
+#btn_tribes { background-image: url('img/blue/tribe.png'); }
+#left_sidebar_container { background-image: url('img/blue/bar_left.png'); }
+#right_sidebar_container { background-image: url('img/blue/bar_left.png'); }

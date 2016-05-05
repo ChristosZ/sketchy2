@@ -1,0 +1,220 @@
+body {
+	background-color: grey;
+	padding: 0;
+	margin: 0;
+	height: 100vh;
+	width: 100vw;
+	overflow: hidden;
+	touch-action: none;
+}
+
+div {
+	padding: 0;
+	margin: 0;
+}
+
+#rotate_screen {
+	display: none;
+	position: fixed;
+	height: 100vh;
+	width: 100%;
+	z-index: 20;
+}
+
+#rotate_screen_msg {
+	height: calc(100% - 10mm);
+	width: calc(100% - 10mm);
+	max-width: 50mm;
+	margin: 5mm auto;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+#small_screen {
+	display: none;
+	position: fixed;
+	height: 100vh;
+	width: 100%;
+	z-index: 20;
+}
+
+#small_screen_msg {
+	height: calc(100% - 6mm);
+	width: calc(100% - 6mm);
+	max-width: 50mm;
+	margin: 3mm auto;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+#sidebar_container {
+	display: inline-block;
+	width: 20mm;
+	height: 100%;
+	float: left;
+	overflow: hidden;
+}
+
+.sidebar {
+	position: relative;
+	height: 100vh;
+	width: 20mm;
+}
+
+.btn_container {
+	position: absolute;
+	height: 40mm;
+	width: 20mm;
+	top: calc((100vh - 40mm) / 2);
+	line-height: 2mm;
+	text-align: center;
+}
+
+.btn{
+	display: inline-block;
+	height: 10mm;
+	width: calc((100% / 2) - 0.1mm);
+	text-align: center;
+	background-size: 100% 100%;
+}
+
+.colorbtn {
+	position: absolute;
+	width:6mm;
+	height:6mm;
+}
+
+#sidebar_draw {
+	margin-top: -100vh;
+}
+
+#sidebar_view {
+	z-index: 5;
+	top: calc(4mm - 100%);
+}
+
+#view_drag {
+	position: absolute;
+	bottom: -3mm;	
+	margin-left: 5mm;
+	margin-right: 5mm;
+}
+
+#sidebar_options {
+	margin-top: -100vh;
+	z-index: 5;
+	top: calc(100% - 4mm);
+}
+
+#options_drag {
+	position: absolute;
+	top: -3mm;	
+	margin-left: 5mm;
+	margin-right: 5mm;
+}
+
+#size_slider {
+	height: 10mm;
+	width: calc(100% - 2mm);
+	margin: 0;
+	padding: 0;
+}
+
+#canvas_container {
+	display: inline-block;
+	width: calc(100% - 20mm);
+	height: 100vh;
+	background-color: grey;
+}
+
+#canvas {
+	display: inline-block;
+	height: calc((100vw - 20mm) / 4 * 3);
+	max-height: 100%;
+	width: calc(400vh / 3);
+	max-width: 100%;
+	vertical-align: middle;
+	background-color: white;
+}
+
+#canvas_layer0 {
+	width: 100%;
+	height: 100%;
+	z-index: 5;
+}
+
+#canvas_img {
+	position: absolute;
+	display: none;
+	height: calc((100vw - 20mm) / 4 * 3 * 0.9);
+	max-height: 90%;
+	width: calc(400vh / 3 * 0.9);
+	max-width: calc((100vw - 20mm) * 0.9);
+	z-index: 5;
+}
+
+@media only screen and (max-height: 54mm) {
+	#small_screen {	display: block; }
+	#sidebar_container { display: none;	}
+	#canvas_container {	display: none; }
+}
+
+@media only screen and (orientation: portrait) {
+	#rotate_screen { display: block; }
+	#canvas_container {	display: none; }
+	#small_screen {	display: none; }
+}
+
+#tile_controls {
+	display: none;
+	height: 100vh;
+	width: 12mm;
+	float: right;
+	overflow: hidden;
+	text-align: center;
+}
+
+#btn_up, #btn_down {
+	width: 10mm;
+	margin: 1mm auto;
+}
+
+.tile {
+	display: block;
+	width: 10mm;
+	height: 10mm;
+	margin: 0 auto;
+	background-image: url('img/common/tile_b_active.png');
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+#tile_container {
+	height: calc(100vh - 25mm);
+}
+
+/*#btn_colorwheel { background-image: url('img/blue/colorwheel.png'); }*/
+#btn_draw {	background-image: url('img/blue/draw.png'); }
+#btn_erase { background-image: url('img/blue/erase.png'); }
+#btn_undo { background-image: url('img/blue/undo.png'); }
+#btn_redo { background-image: url('img/blue/redo.png'); }
+#view_drag { background-image: url('img/blue/view.png'); }
+#options_drag { background-image: url('img/blue/options.png'); }
+#btn_active { background-image: url('img/blue/draw.png'); }
+#btn_posted { background-image: url('img/blue/post.png'); }
+#btn_tribe { background-image: url('img/blue/tribe.png'); }
+#btn_save { background-image: url('img/blue/save.png'); }
+#btn_post { background-image: url('img/blue/post.png'); }
+#btn_mirror { background-image: url('img/blue/mirror.png'); }
+#btn_clear { background-image: url('img/blue/clear.png'); }
+#btn_tribes { background-image: url('img/blue/tribe.png'); }
+#rotate_screen { background-image: url('img/blue/bar_top.png'); }
+#rotate_screen_msg { background-image: url('img/blue/rotate_screen.png'); }
+#small_screen { background-image: url('img/blue/bar_top.png'); }
+#small_screen_msg { background-image: url('img/blue/small_screen.png'); }
+#btn_up { background-image: url('img/blue/post.png'); }
+#btn_down { background-image: url('img/blue/save.png'); }
+.sidebar { background-image: url('img/blue/bar_left.png'); }
