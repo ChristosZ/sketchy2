@@ -179,9 +179,158 @@ function centerImage (jObj) {
 	jObj.css('margin-left', mLeft);
 }
 
-function addTile (username, tribe, active) {
-	if ($('#' + username).length !== 0) $('#' + username).remove();
+function fadeOutTileBarContents (t) {
+	$('#btn_up').fadeOut(t);
+	$('#btn_down').fadeOut(t);
+	tCont.fadeOut(t);
+}
+
+function fadeInTileBarContents (t) {
+	tCont.fadeIn(300);
+	refreshUpBtn();
+	refreshDownBtn();
+}
+
+/*************************
+ * tile sidebar controls *
+ *************************/
+
+var tiles = []; //one per viewable user
+var tileIndex = 0; //index in 'tiles' array of topmost viewing tile
+var tileCapacity = 0; //how many tiles can visually fit in container
+refreshTileSidebar();
+
+//testing
+setTimeout(function (){
+	tileAdd('user4', 'blue', false);
+	tileAdd('user5', 'green', true);
+	tileAdd('user6', 'green', true);
+	tileAdd('user7', 'green', true);
+	tileAdd('user8', 'green', true);
+	tileAdd('user9', 'green', true);
+	tileAdd('user10', 'green', true);
+	tileAdd('user11', 'green', true);
+	tileAdd('user12', 'blue', false);
+	tileAdd('user13', 'green', true);
+	tileAdd('user14', 'green', true);
+	tileAdd('user15', 'green', true);
+	tileAdd('user16', 'green', true);
+	tileAdd('user17', 'green', true);
+	tileAdd('user18', 'green', true);
+	tileAdd('user19', 'green', true);
+	alert('lvl1');
+	setTimeout(function (){
+		tileChange('user4', 'blue', false);
+		tileChange('user19', 'purple', false);
+		alert('lvl2');
+		setTimeout(function (){
+			tileRemove('user5');
+			tileRemove('user7');
+			alert('lvl3');
+			setTimeout(function (){
+				tileRemove('user19');
+				alert('lvl4');
+			}, 4000);
+		}, 4000);
+	}, 4000);
+}, 4000);
+
+tCont.resize(function() {refreshTileSidebar()});
+
+function refreshTileSidebar () {
+	var tile = $('<div class=tile></div>');
 	
+	var newTileCapacity = Math.floor(tCont.height()/tile.height());
+	if (newTileCapacity == tileCapacity) return; //no action needed
+	
+	tileCapacity = newTileCapacity;
+	refreshTileCont();
+	refreshDownBtn();
+}
+
+$('#btn_up').click(function(e){
+	var newTileIndex = Math.max(0, tileIndex - tileCapacity);
+	if (tileIndex != newTileIndex) {
+		tileIndex = newTileIndex;
+		refreshTileCont();
+	}
+	refreshUpBtn();
+	refreshDownBtn();
+});
+
+$('#btn_down').click(function(e){
+	var newTileIndex = Math.min(tileIndex + tileCapacity, tiles.length - 1);
+	if (tileIndex != newTileIndex) {
+		tileIndex = newTileIndex;
+		refreshTileCont();
+	}
+	refreshUpBtn();
+	refreshDownBtn();
+});
+
+//call on 'updated user' socket event
+function tileChange (username, tribe, active) {
+	var i = getTileIndex(username);
+	if (i !== -1) {
+		tiles[i].tribe = tribe;
+		tiles[i].active = active;
+			
+		var tile = $('#' + username);
+		if (tile.length !== 0) { //being displayed, update tile
+			var oldAddr = tile.css('background-image');
+			var newAddr = oldAddr.substring(0, oldAddr.length - 14);
+			newAddr = newAddr + tribe.substring(0,1) + '_' + ((active) ? 'active' : 'posted') + '.png")';
+			tile.css('background-image', newAddr);
+		}
+		return;
+	}
+	tileAdd(username, tribe, active); //didn't find tile, add instead
+}
+
+//call on 'added user' socket event
+function tileAdd (username, tribe, active) {
+	var i = getTileIndex(username);
+	if (i !== -1) {
+		tileChange(username, tribe, active); //already exists, update
+		return;
+	}
+	tiles.push({username: username, tribe: tribe, active: active});
+	if (tiles.length - tileIndex <= tileCapacity)
+		addTileToView(username, tribe, active); //add to viewing tiles
+		
+	refreshDownBtn();
+}
+
+//call on 'removed user' socket event
+function tileRemove (username) {
+	var i = getTileIndex(username);
+	if (i === -1) return; //is not there to remove
+	
+	if (i < tileIndex) {
+		tiles.splice(i,1);
+		tileIndex = tileIndex - 1;
+		refreshUpBtn();
+	} else if (i >= tileIndex + tileCapacity) {
+		tiles.splice(i,1);
+		refreshDownBtn();
+	} else { //currently viewed in sidebar
+		tiles.splice(i,1);
+		var tile = $('#' + username);
+		if (tile.length !== 0) tile.remove();
+		
+		var tileShiftedIntoView = tileIndex + tileCapacity - 1;
+		if (tileShiftedIntoView < tiles.length) {
+			var t = tiles[tileShiftedIntoView];
+			addTileToView(t.username, t.tribe, t.active);
+		}
+		refreshDownBtn();
+		
+		//if no more tiles in view
+		if (tileIndex >= tiles.length) $('#btn_up').click();
+	}
+}
+
+function addTileToView (username, tribe, active) {
 	var tile = $('<div class=tile></div>');
 	tile.attr('id', username);
 	tCont.append(tile);
@@ -190,40 +339,53 @@ function addTile (username, tribe, active) {
 	var newAddr = defaultAddr.substring(0, defaultAddr.length - 14);
 	newAddr = newAddr + tribe.substring(0,1) + '_' + ((active) ? 'active' : 'posted') + '.png")';
 	tile.css('background-image', newAddr);
+	
+	tile.click(function(e){
+		var username = $(this).attr('id');
+		if (getTileIndex(username) === -1) {
+			refreshTileCont();
+			return;
+		}
+		canvasImg.fadeOut(300);
+
+		//TODO: call following when image sent through sockets
+		var dataURL = canvas0[0].toDataURL(); //TODO: replace with live sketch
+		canvasImg.attr('src', dataURL);
+		canvasImg.fadeIn(300);
+	});
 }
 
-function removeTile(username) {
-	var tile = $('#' + username);
-	if (tile.length !== 0) tile.remove();
+function getTileIndex (username) {
+	for (var i in tiles) {
+		if (tiles[i].username === username)
+			return i;
+	}
+	return -1;
 }
 
-function changeTile (username, tribe, active) {
-	var tile = $('#' + username);
-	if (tile.length === 0) addTile(username, tribe, active);
+function refreshUpBtn () {
+	if (tileIndex == 0) {
+		$('#btn_up').fadeOut(30);
+		tCont.css('margin-top', '13mm');
+	}
 	else {
-		var oldAddr = tile.css('background-image');
-		var newAddr = oldAddr.substring(0, oldAddr.length - 14);
-		newAddr = newAddr + tribe.substring(0,1) + '_' + ((active) ? 'active' : 'posted') + '.png")';
-		tile.css('background-image', newAddr);
+		tCont.css('margin-top', '');
+		$('#btn_up').fadeIn(30);
 	}
 }
 
-function fadeOutTileBarContents (t) {
-	$('#btn_up').fadeOut(t);
-	$('#btn_down').fadeOut(t);
-	tCont.fadeOut(t);
+function refreshDownBtn () {
+	if (tileIndex + tileCapacity < tiles.length) $('#btn_down').fadeIn(30);
+	else $('#btn_down').fadeOut(30);
 }
 
-function fadeInTileBarContents (t) {
-	$('#btn_up').fadeIn(t);
-	$('#btn_down').fadeIn(t);
-	tCont.fadeIn(t);
+function refreshTileCont () {
+	tCont.empty();
+	for (i = 0; i < tileCapacity && tileIndex + i < tiles.length; i++) {
+		var t = tiles[tileIndex + i];
+		addTileToView(t.username, t.tribe, t.active);
+	}
 }
-
-addTile('user4', 'blue', false);
-addTile('user6', 'orange', true);
-changeTile('user6', 'gr', false);
-changeTile('user7', 'r', true);
 
 /***********************************************
  * 'touch' event handling for sidebar dragging *
@@ -582,7 +744,5 @@ function changeTribe (obj, oldTribe, newTribe) {
 	var newAddr = oldAddr.replace('/img/' + oldTribe + '/', '/img/' + newTribe + '/');
 	obj.css('background-image', newAddr);
 }
-
-//TODO: sketch viewing functionality
 
 }, false)
