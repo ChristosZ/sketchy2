@@ -201,6 +201,7 @@ var tileCapacity = 0; //how many tiles can visually fit in container
 refreshTileSidebar();
 
 //testing
+/*
 setTimeout(function (){
 	tileAdd('user4', 'blue', false);
 	tileAdd('user5', 'green', true);
@@ -234,6 +235,7 @@ setTimeout(function (){
 		}, 4000);
 	}, 4000);
 }, 4000);
+*/
 
 tCont.resize(function() {refreshTileSidebar()});
 
