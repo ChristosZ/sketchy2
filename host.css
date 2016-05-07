@@ -19,7 +19,16 @@ div {
 	height: 100vh;
 	width: 100%;
 	z-index: 20;
-	background-color: red;
+}
+
+#rotate_screen_msg {
+	height: calc(100% - 10mm);
+	width: calc(100% - 10mm);
+	max-width: 50mm;
+	margin: 5mm auto;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
 }
 
 #small_screen {
@@ -28,39 +37,65 @@ div {
 	height: 100vh;
 	width: 100%;
 	z-index: 20;
-	background-color: darkred;
-}
-	
-#left_sidebar_container {
-	display: inline-block;
-	width: 20mm;
-	height: 100vh;
-	float: left;
 }
 
-#right_sidebar_container {
+#small_screen_msg {
+	height: calc(100% - 6mm);
+	width: calc(100% - 6mm);
+	max-width: 50mm;
+	margin: 3mm auto;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+#left_sidebar { float: left; }
+#right_sidebar { float: right; }
+
+.sidebar {
 	display: inline-block;
 	width: 20mm;
 	height: 100vh;
-	float: right;
+	background-size: 100% 100%;
 }
 
 .btn_container {
 	position: absolute;
-	height: 60mm;
 	width: 20mm;
-	top: calc((100vh - 60mm) / 2);
 	line-height: 2mm;
 	text-align: center;
 }
 
-.btn{
+#left_sidebar_container2 { display: none; }
+#right_sidebar_container2 { display: none; }
+
+.btn_container_mini {
+	position: fixed;
+	bottom: 0px;
+	width: 20mm;
+	line-height: 2mm;
+	text-align: center;
+}
+
+#left_mini_container { left: 0px; }
+#right_mini_container { right: 0px; }
+
+.btn {
 	display: inline-block;
 	height: 10mm;
 	width: calc((100% / 2) - 0.1mm);
 	text-align: center;
 	background-size: 100% 100%;
 }
+
+.large {
+	position: absolute;
+	top: 0px;
+	width: 20mm;
+	height: 20mm;
+}
+
+#btn_canvas_show, #btn_sketches_show { display:none; }
 
 .colorbtn {
 	position: absolute;
@@ -75,17 +110,34 @@ div {
 	padding: 0;
 }
 
+#tile_container {
+	display: inline-block;
+	width: calc((100% - 40mm) / 2);
+	height: 100vh;
+	float: right;
+	background-color: grey;
+	overflow-y: scroll;
+}
+
+.tile {
+	display: inline-block;
+	width: calc((100% / 3 * 0.80) - 6px);
+	margin: calc((100% / 3 * 0.15) - 6px);
+	border-width: 3px;
+	border-style: solid;
+}
+
 #canvas_container {
 	display: inline-block;
 	width: calc((100% - 40mm) / 2);
-	height: 50vh;
+	height: 100vh;
 	float: left;
 	background-color: grey;
 }
 
 #canvas {
 	display: inline-block;
-	height: calc((100vw - 40mm) / 4 * 3);
+	height: calc((100vw - 40mm) / 8 * 3);
 	max-height: 100%;
 	width: calc(400vh / 3);
 	max-width: 100%;
@@ -102,41 +154,50 @@ div {
 #canvas_img {
 	position: absolute;
 	display: none;
-	height: calc((100vw - 20mm) / 4 * 3 * 0.9);
+	height: calc((100vw - 40mm) / 8 * 3 * 0.9);
 	max-height: 90%;
 	width: calc(400vh / 3 * 0.9);
-	max-width: calc((100% - 20mm) * 0.9);
-	margin-top: 5vh;
-	margin-left: calc((100% - 20mm) * 0.05);
+	max-width: calc((100vw - 40mm) / 2 * 0.9);
 	z-index: 5;
 }
 
-@media only screen and (max-height: 54mm) {
-	#small_screen {	display: block; }
-	#sidebar_container { display: none;	}
-	#canvas_container {	display: none; }
-}
-
-@media only screen and (orientation: portrait) {
-	#rotate_screen { display: block; }
-	#canvas_container {	display: none; }
-	#small_screen {	display: none; }
-}
+@media only screen and (max-height: 92mm) {#small_screen {display: block;}}
+@media only screen and (orientation: portrait) {#rotate_screen {display: block;}}
 
 /*#btn_colorwheel { background-image: url('img/blue/colorwheel.png'); }*/
-#btn_draw {	background-image: url('img/blue/draw.png'); }
+#btn_canvas_hide { background-image: url('img/blue/canvas_hide.png'); }
+#btn_canvas_show { background-image: url('img/blue/canvas_show.png'); }
+#btn_sketches_hide { background-image: url('img/blue/sketches_hide.png'); }
+#btn_sketches_show { background-image: url('img/blue/sketches_show.png'); }
+#btn_draw { background-image: url('img/blue/draw.png'); }
 #btn_erase { background-image: url('img/blue/erase.png'); }
 #btn_undo { background-image: url('img/blue/undo.png'); }
 #btn_redo { background-image: url('img/blue/redo.png'); }
-#view_drag { background-image: url('img/blue/view.png'); }
-#options_drag { background-image: url('img/blue/options.png'); }
-#btn_active { background-image: url('img/blue/draw.png'); }
-#btn_posted { background-image: url('img/blue/post.png'); }
-#btn_tribe { background-image: url('img/blue/tribe.png'); }
+#btn_active { background-image: url('img/blue/active.png'); }
+#btn_posted { background-image: url('img/blue/posted.png'); }
 #btn_save { background-image: url('img/blue/save.png'); }
 #btn_post { background-image: url('img/blue/post.png'); }
-#btn_mirror { background-image: url('img/blue/mirror.png'); }
-#btn_clear { background-image: url('img/blue/clear.png'); }
+#btn_clear { background-image: url('img/blue/clear_canvas.png'); }
+#btn_zoom_out { background-image: url('img/blue/zoom_out.png'); }
+#btn_zoom_in { background-image: url('img/blue/zoom_in.png'); }
+#btn_save_all { background-image: url('img/blue/save_all.png'); }
 #btn_tribes { background-image: url('img/blue/tribe.png'); }
-#left_sidebar_container { background-image: url('img/blue/bar_left.png'); }
-#right_sidebar_container { background-image: url('img/blue/bar_left.png'); }
+#btn_slideshow_active { background-image: url('img/blue/active.png'); }
+#btn_slideshow_posted { background-image: url('img/blue/posted.png'); }
+#btn_view_selected { background-image: url('img/blue/view_selected.png'); }
+#btn_view_random { background-image: url('img/blue/view_random.png'); }
+#btn_pause { background-image: url('img/blue/empty.png'); }
+#btn_play_slow { background-image: url('img/blue/empty.png'); }
+#btn_play_fast { background-image: url('img/blue/empty.png'); }
+#btn_tribe { background-image: url('img/blue/tribe.png'); }
+#btn_help { background-image: url('img/blue/help.png'); }
+#btn_mirror { background-image: url('img/blue/mirror.png'); }
+#btn_close { background-image: url('img/blue/close_room.png'); }
+#rotate_screen { background-image: url('img/blue/bar_top.png'); }
+#rotate_screen_msg { background-image: url('img/blue/rotate_screen.png'); }
+#small_screen { background-image: url('img/blue/bar_top.png'); }
+#small_screen_msg { background-image: url('img/blue/small_screen.png'); }
+#btn_up { background-image: url('img/blue/post.png'); }
+#btn_down { background-image: url('img/blue/save.png'); }
+#left_sidebar { background-image: url('img/blue/bar_left.png'); }
+#right_sidebar { background-image: url('img/blue/bar_right.png'); }
