@@ -112,7 +112,7 @@ div {
 
 #tile_container {
 	display: inline-block;
-	width: calc((100% - 40mm) / 2);
+	width: calc((100% - 42mm) / 2);
 	height: 100vh;
 	float: right;
 	background-color: grey;
@@ -122,14 +122,14 @@ div {
 .tile {
 	display: inline-block;
 	width: calc((100% / 3 * 0.80) - 6px);
-	margin: calc((100% / 3 * 0.15) - 6px);
+	margin: calc(((100% / 3 * 0.18))/2);
 	border-width: 3px;
 	border-style: solid;
 }
 
 #canvas_container {
 	display: inline-block;
-	width: calc((100% - 40mm) / 2);
+	width: calc((100% - 42mm) / 2);
 	height: 100vh;
 	float: left;
 	background-color: grey;
