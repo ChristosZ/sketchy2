@@ -84,7 +84,10 @@ $('.hover').mouseenter(function(e){
 
 $('.hover').mouseleave(function(e){
 	var obj = $(this);
-	if (obj.attr('id').substring(4) == mode) hover(obj);
+	var id = obj.attr('id').substring(4); 
+	if (id == mode) hover(obj);
+	else if (id == 'active' && showActiveClicked) { hover(obj); }
+	else if (id == 'posted' && showPostedClicked) { hover(obj); }
 	else unhover(obj);
 })
 
@@ -96,12 +99,12 @@ $('.hover').on('mousedown touchstart', function(e){
 
 $('.hover').on('mouseup touchend', function(e){
 	var obj = $(this);
-	var btn = obj.attr('id').substring(4);
+	var id = obj.attr('id').substring(4);
 	
-	if (btn != 'draw' && btn != 'erase') toggleHover(obj);
+	if (id != 'draw' && id != 'erase') toggleHover(obj);
+	else if (id == 'active' && showActiveClicked) { hover(obj); }
+	else if (id == 'posted' && showPostedClicked) { hover(obj); }
 	else setMode(obj);
-
-	//canvas.html('Pressed ' + btn + ' button');
 })
 
 $('#size_slider').on('pointerup mouseup touchend', function(e){
@@ -109,8 +112,6 @@ $('#size_slider').on('pointerup mouseup touchend', function(e){
 	var size = (parseInt(obj.val())+1)/10;
 	if (mode == 'erase') eraserSize = size;
 	else if (mode == 'draw') brushSize = size;
-	
-	//canvas.html('Width changed to: ' + size);
 });
 
 function hover (jObj) {
@@ -254,11 +255,19 @@ borderColors['orange'] = 'rgb(198,93,40)';
 borderColors['red'] = 'rgb(219,54,39)';
 borderColors['purple'] = 'rgb(175,96,166)';
 
+var showActiveClicked = true;
+var showPostedClicked = true;
+var filterColor = 'all';
+var filterColorOptions = ['all','blue','green','yellow','orange','red','purple'];
+hover($('#btn_posted'));
+hover($('#btn_active'));
+
 refreshTiles();
 $(window).resize(function() {refreshTileSizes()});
 
+
 tileAdd('user2','green',false);
-tileAdd('user4','purple',true);
+tileAdd('user4','purple',false);
 tileAdd('user5','blue',true);
 tileAdd('user6','yellow',true);
 tileAdd('user12','green',false);
@@ -270,9 +279,9 @@ tileAdd('user24','purple',true);
 tileAdd('user25','blue',true);
 tileAdd('user26','yellow',true);
 tileAdd('user27','green',false);
-tileAdd('user28','purple',true);
+tileAdd('user28','purple',false);
 tileAdd('user29','blue',true);
-tileAdd('user260','yellow',true);
+tileAdd('user260','yellow',false);
 tileAdd('user028','purple',true);
 tileAdd('user029','blue',true);
 tileAdd('user0260','yellow',true);
@@ -344,6 +353,7 @@ function getTileIndex (username) {
 
 function refreshTileSizes () {
 	$('.tile').css('width', 'calc((100% / ' + tilesPerLine + ' * 0.80) - 6px)');
+	$('.tile').css('margin', 'calc((100% / ' + tilesPerLine + ' * 0.18)/2)');
 	var tile = $();
 	$('.tile').each(function () {
 		var t = $(this);
@@ -360,39 +370,74 @@ function refreshTiles () {
 	refreshTileSizes ();
 }
 
+$('#btn_zoom_in').click(function(e){
+	tilesPerLine = Math.max(--tilesPerLine, 1);
+	refreshTileSizes();
+});
+
+$('#btn_zoom_out').click(function(e){
+	tilesPerLine = Math.min(++tilesPerLine, 5);
+	refreshTileSizes();
+});
+
 //fStatus can be 'all', 'active' or 'posted'
 function tileFilter (fStatus, fTribe) {
+	var foundMatch = false;
+	
 	for (i = 0; i < tiles.length; i++) {
 		var t = tiles[i];
 		var statusValid = (fStatus == 'all')|(fStatus==(t.active?'active':'posted'));
-		var colorValid = (t.tribe == fTribe);
-		if (statusValid && colorValid) t.show();
-		else t.hide();
+		var colorValid = (fTribe == 'all' | t.tribe == fTribe);
+		if (statusValid && colorValid) {
+			$('#' + t.username).show();
+			foundMatch = true;
+		}
+		else $('#' + t.username).hide();
 	}
+	refreshTileSizes();
+	return foundMatch;
 }
 
 $('#btn_active').click(function(e){
-	var lBar = $('#left_sidebar');
-	var rBar = $('#right_sidebar');
-	
-	if (lBar.css('float') == 'left') { //original layout
-		lBar.css('float', 'right');
-		rBar.css('float', 'left');
-		$('#btn_canvas_show, #btn_canvas_hide').css('float', 'right');
-		$('#canvas_container').css('float', 'right');
+	if (showActiveClicked === true) {
+		showActiveClicked = false;
+		unhover($(this));
+		if (showPostedClicked) tileFilter('posted', filterColor);
+		else $('#btn_posted').click();
+	} else {
+		showActiveClicked = true;
+		hover($(this));
+		if (showPostedClicked) tileFilter('all', filterColor);
+		else tileFilter('active', filterColor);
 	}
-	else { //reverse layout
-		lBar.css('float', 'left');
-		rBar.css('float', 'right');
-		$('#tile_container').css('float', 'right');
-		$('#canvas_container').css('float', 'left');
-	}	
+});
+
+$('#btn_posted').click(function(e){
+	if (showPostedClicked === true) {
+		showPostedClicked = false;
+		unhover($(this));
+		if (showActiveClicked) tileFilter('active', filterColor);
+		else $('#btn_active').click();
+	} else {
+		showPostedClicked = true;
+		hover($(this));
+		if (showActiveClicked) tileFilter('all', filterColor);
+		else tileFilter('posted', filterColor);
+	}
+});
+
+$('#btn_tribe').click(function(e){
+	if (tiles.length == 0) return;
+	var colorsTried = 0;
+	var stat =(showPostedClicked ?(showActiveClicked ?'all':'posted'):'active');
 	
-	var lAddr = lBar.css('background-image');
-	var rAddr = rBar.css('background-image');
-	lBar.css('background-image', rAddr);
-	rBar.css('background-image', lAddr);
-	unhover($(this));
+	while (colorsTried < filterColorOptions.length) {
+		var i = filterColorOptions.indexOf(filterColor);
+		filterColor = filterColorOptions[++i % filterColorOptions.length];
+		
+		if (tileFilter(stat, filterColor)) return; //found tiles of color
+		colorsTried++;
+	}
 });
 
 /*********************
