@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Sketchy: Login</title>
+		<link rel="stylesheet" href="login.css" type="text/css" />
+    	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script type="text/javascript" src="login.js"></script>
+	</head>
+	<body>
+		<div id='rotate_screen'><div id='rotate_screen_msg'></div></div>
+		<div id='small_screen'><div id='small_screen_msg'></div></div>
+		<div id='first_page'>
+			<div id='logo'></div>
+			<div class=nav_container><div class=go_join><div class='btn go_btn'></div>Join</div><div class=go_host><div class='btn go_btn'></div>Host</div></div>
+		</div>
+		<div id='join_page'>
+			<div class=sidebar>
+				<div class=field_container>
+					<div id='btn_tribe' class=btn>
+					</div><input id='nickname' type='input' value='Nickname'>
+				</div>
+				<div class=field_container>
+					<div id='btn_search' class=btn>
+					</div><input id='search_text' type='input' value='Roomname'>
+				</div>
+				<div class=nav_container><div class=go_join><div class='btn go_btn'></div>Join</div><div class=go_host><div class='btn go_btn'></div>Host</div></div>
+			</div>
+			<div class=head_bar>
+				<div id='btn_tribe_sort' class=btn></div>
+				<div id='roomname_sort'>Room name</div>
+				<div id='posted_sort'></div>
+				<div id='active_sort'></div>
+			</div>
+			<div id='room_container'>
+				<div class=room>
+					<div id='room1' class=bullet>
+					</div><div class='roomname_field'>room1
+					</div><div class='num_active'>18
+					</div><div class='num_posted'>10</div>
+				</div>
+			</div>
+		</div>
+		<div id='host_page'>
+			<div class=sidebar>
+				<div class=field_container>
+					<div id='btn_draw' class=btn>
+					</div><input id='nickname' type='input' value='Nickname'>
+				</div>
+				<div class=field_container>
+					<div id='btn_tribe_2' class=btn>
+					</div><input id='search_text' type='input' value='Roomname'>
+				</div>
+				<div class=nav_container><div class=go_join><div class='btn go_btn'></div>Join</div><div class=go_host><div class='btn go_btn'></div>Host</div></div>
+			</div>
+			<div class=head_bar></div>
+			<div id='head_bar_1'>
+				<p id='public_text'>Public</p><div id='go_public' class='btn go_btn' src='img/blue/go.png'>
+				<p id='private_text'>Private</p><div id='go_private' class='btn go_btn' src='img/blue/go.png'>
+			</div>
+		</div>
+	</body>
+</html>
