@@ -56,12 +56,37 @@ div {
 	bottom: 2mm;
 }
 
+#host_container .nav_container {
+	position: static;
+	margin: 1mm;
+	width: 45mm;
+}
+
+#host_container .nav_container .go_btn {
+	float: right;
+}
+
 .go_join, .go_host {
 	display: inline-block;
 	height: 10mm;
 	font-size: 8mm;
+	line-height: 8mm;
 	text-align: left;
-	cursor: pointer;
+	cursor: default;
+	vertical-align: middle;
+}
+
+.go_btn {
+	vertical-align: middle;	
+}
+
+.label {
+	display: inline-block;
+	height: 10mm;
+	font-size: 8mm;
+	margin: 0 2mm;
+	line-height: 10mm;
+	cursor: default;
 	vertical-align: middle;
 }
 
@@ -70,6 +95,8 @@ div {
 	height: 10mm;
 	width: 10mm;
 	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
 }
 
 .sidebar{
@@ -132,17 +159,21 @@ input {
 	float: right;
 }
 
-#room_container{
+#room_container, #host_container {
 	display: inline-block;
-	height: 100%;
+	height: calc(100% - 10mm);
 	width: calc(100% - 40mm);
 	font-size: 6mm;
-	overflow: hide;
 	overflow-y: scroll;
+}
+
+#host_container {
+	overflow-y: hidden;
 }
 
 .room {
 	height: 10mm;
+	cursor: default;
 }
 
 .bullet{
@@ -170,33 +201,6 @@ input {
 	text-align: center;
 	vertical-align: middle;
 	overflow: hidden;
-}
-
-#public_text{
-	position: fixed;
-	left: 400px;
-	font-size: 50px;
-	font-family: "Comic Sans MS", cursive, sans-serif;
-}
-
-#private_text{
-	position: fixed;
-	left: 400px;
-	top: 100px;
-	font-size: 50px;
-	font-family: "Comic Sans MS", cursive, sans-serif;
-}
-
-#go_public{
-	position: fixed;
-	right: 100px;
-	top: 50px;
-}
-
-#go_private{
-	position: fixed;
-	right: 100px;
-	top: 150px;
 }
 
 #rotate_screen {
