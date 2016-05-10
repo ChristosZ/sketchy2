@@ -221,12 +221,29 @@ $('#search_text').keydown(function (e) {
 	if (e.originalEvent.keyCode == 13) $('#btn_search').click();
 });
 
-illegalkey = ['!','@','#','$','%','^','&','*','(',')','_','-','=','+',
-				'[','{',']','}',';',':','\'','\"',',','<','.','>','/','?'];
-$('input').keyup(function(e){
-	var userinput = $(this)[0].value;
-	if (illegalkey.indexOf(userinput[userinput.length-1]) != -1)
-		$(this)[0].value = $(this)[0].value.slice(0,-1);
+var trackusername = '';
+$('#nickname').keyup(function(event){
+	var f = $(this);
+	if (/^([a-z0-9A-Z]*)$/.test(f.val()) == false) f.val(trackusername);
+	else {
+		trackusername = f.val();
+		$('#nickname2').val(f.val());
+	}
+});
+$('#nickname2').keyup(function(event){
+	var f = $(this);
+	if (/^([a-z0-9A-Z]*)$/.test(f.val()) == false) f.val(trackusername);
+	else {
+		trackusername = f.val();
+		$('#nickname').val(f.val());
+	}
+});
+
+var trackroomname = '';
+$('#roomname').keyup(function(event){
+	var f = $(this);
+	if (/^([a-z0-9A-Z]*)$/.test(f.val()) == false) f.val(trackroomname);
+	else trackroomname = f.val();
 });
 
 $('#btn_tribe').click(function(e){ toggleTribe(); });

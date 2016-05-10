@@ -14,6 +14,7 @@ var mode = 'draw';
 var color = 'black';
 var brushSize = 6;
 var eraserSize = 7;
+var undolimit = 5;
 
 hover(drawBtn);
 $('#size_slider').val((brushSize*10)-1);
@@ -450,6 +451,7 @@ var drawing = false,
 	prevY = 0,
 	currY = 0;
 var trackimage = new Array();
+trackimage.push(canvas0[0].toDataURL());
 var step = 0;
 $('#btn_undo').css("pointer-events", "none");
 $('#btn_redo').css("pointer-events", "none");
@@ -457,12 +459,17 @@ $('#btn_redo').css("pointer-events", "none");
 canvas0.on('mousedown pointerdown', function (e) {findxy('down', e.originalEvent)});
 canvas0.on('mousemove pointermove', function (e) {findxy('move', e.originalEvent)});
 canvas0.on('mouseout pointerout',   function (e) {findxy('out',  e.originalEvent)});
-canvas0.on('mouseup pointerup',     function (e) {findxy('up',   e.originalEvent)});
+canvas0.on('mouseup pointerup',	 function (e) {findxy('up',   e.originalEvent)});
 
 canvas0.on('touchstart', function(e){findxy('down', e.originalEvent.changedTouches[0])});
 canvas0.on('touchmove',  function(e){findxy('move', e.originalEvent.changedTouches[0])});
 canvas0.on('touchleave', function(e){findxy('out',  e.originalEvent.changedTouches[0])});
 canvas0.on('touchend',   function(e){findxy('up',   e.originalEvent.changedTouches[0])});
+
+$(document).on('mouseup pointerup', function(e){ drawing = false; })
+$(document).on('mousemove pointermove touchmove', function(e){
+	if (drawing === true) findxy('move', e.originalEvent);
+});
 
 function draw() {
 	ctx.beginPath();
@@ -482,18 +489,21 @@ function findxy(res, e) {
 	if (res == 'down') {
 		currX = e.clientX - canvas0[0].offsetLeft;
 		currY = e.clientY - canvas0[0].offsetTop;
-		push();
 		drawing = true;
 		ctx.beginPath();
 		ctx.fillStyle = (mode == 'erase') ? 'white' : color;
 		ctx.arc(currX, currY, brushSize/2, 0, 2*Math.PI);
 		ctx.fill();
 	}
-	if (res == 'up' || res == "out") {
+	if (res == 'up') {
+		if (drawing == true) {
+			//send('sketch');/////////////////////
+		}
 		drawing = false;
-		//TODO: send to server
+		push();
 	}
-	if (res == 'move') {
+	if (res == 'move' || res == 'out') {
+		
 		if (drawing) {
 			prevX = currX;
 			prevY = currY;
@@ -512,6 +522,10 @@ function push(){
 	}
 	if (trackimage.indexOf(canvas0[0].toDataURL()) == -1){
 		trackimage.push(canvas0[0].toDataURL());
+	}
+	if (step > undolimit){
+		step = undolimit;
+		trackimage.shift();
 	}
 }
 
@@ -535,11 +549,11 @@ $('#btn_undo').click(function(e){
 		oldtrack.src = trackimage[step];
 		ctx.clearRect(0, 0, canvas0[0].width, canvas0[0].height);
 		oldtrack.onload = function (){ctx.drawImage(oldtrack,0,0);}
+		if (step == 0){
+			$('#btn_undo').css("pointer-events", "none");
+		}
 	}
-	if (step == 0){
-		$('#btn_undo').css("pointer-events", "none");
-	}
-	//TODO: adjust canvas layer visibility, notify server	
+	//send('sketch');///////////////////////////
 });
 
 $('#btn_redo').click(function(e){
@@ -549,14 +563,12 @@ $('#btn_redo').click(function(e){
 			newtrack.src = trackimage[step];
 			ctx.clearRect(0, 0, canvas0[0].width, canvas0[0].height);
 			newtrack.onload = function() {ctx.drawImage(newtrack,0,0);}
+			if (step == trackimage.length-1){
+				$('#btn_redo').css("pointer-events", "none");
+			$('#btn_undo').css("pointer-events", "auto");
+		}
 	}
-	if (step == trackimage.length-1){
-		$('#btn_redo').css("pointer-events", "none");
-		$('#btn_undo').css("pointer-events", "auto");
-	}
-	
-	//TODO: adjust canvas layer visibility, notify server
-	
+	//send('sketch');///////////////////////
 });
 
 $('#btn_save').click(function(e){
@@ -603,9 +615,10 @@ $('#btn_mirror').click(function(e){
 });
 
 $('#btn_post').click(function(e){
-	
-	//TODO: prompt and permanently post picture
-	
+	var notes = prompt("This will permanently submit your sketch. Add any notes here:");
+	if (notes != null) {
+		//send('submit', notes);/////////////////////////////////////////////
+	}
 });
 
 $('#btn_tribes').click(function(e){
@@ -620,6 +633,7 @@ $('#btn_tribes').click(function(e){
 	changeTribe($('#small_screen_msg'), tribe, newTribe);
 	
 	tribe = newTribe;
+	//socket.emit('updateTribe', tribe);///////////////////////////////////////
 });
 
 function changeTribe (obj, oldTribe, newTribe) {

@@ -22,6 +22,7 @@ var mode = 'draw';
 var color = 'black';
 var brushSize = 6;
 var eraserSize = 7;
+var undolimit = 5;
 
 hover(drawBtn);
 $('#size_slider').val((brushSize*10)-1);
@@ -31,16 +32,71 @@ ctx.fillStyle = 'white'; //canvas is transparent by default
 ctx.fillRect(0, 0, canvas0.width(), canvas0.height());
 ctx.fill();
 
+/*************************
+****** SOCKETS ***********
+**************************/
+/*
+function meta(name) {
+	var tag = document.querySelector('meta[name=' + name + ']');
+	if (tag != null) return tag.content;
+	return '';
+}
+
+var socket = io.connect();
+socket.emit('updateSocket', window.location.pathname);
+
+//TESTINGGGGGG
+var room = 'testroom';
+var name = 'testuser';
+socket.emit('joinRoom', room, name, tribe);
+
+function send(mode, notes) {
+	var dataURL = canvas0[0].toDataURL();
+	if(mode == 'sketch') {
+		socket.emit('updateSketch',dataURL);
+	}
+	if(mode == 'submit') {
+		socket.emit('submitSketch', dataURL, notes);
+	}
+}
+
+socket.on('userJoined', function(name, tribe){
+	//userJoined should add a new tile for the sketches
+	tileAdd(name, tribe, true);
+	console.log('user' + name + " has joined room the room");
+});
+
+socket.on('tribeUpdated', function(name, tribe) {
+	//should find the users tile and change the color
+	console.log(tribe);
+	tileChange(name, tribe, true);
+});
+
+socket.on('sketchSubmitted', function(data) {
+	tileAdd(data.user, data.tribe, false);
+	//should add the final sketch as a tile
+});
+
+socket.on('sketchUpdated', function(data) {
+	if (data.user == viewingTile) {
+		canvasImg.attr('src', data.sketch);
+		canvasImg.fadeIn(300);
+	}
+});
+
+socket.on('userLeft', function(data) {
+	tileRemove(data);
+});
+
+socket.on('alert', function(string) {
+	alert(string);
+});
+*/
+///////////////////////////
+
 //TODO: fixes & bugs:
-//First line takes a while to register?
-//draw off page quickly breaks the line
 //click and drag off bottom in IE scrolls a bit
-//keep drawing when off screen
 //IE: pull up options sidebar, then pull down, gets sticky
-//make tribe button hoverable
-//make sketch tiles clickable and scrollable with buttons
-//add vertical scrollbar in view mode and filtering
-//center image in view mode
 
 /****************************
  * General display behavior *
@@ -95,8 +151,6 @@ $('.hover').on('mouseup touchend', function(e){
 	
 	if (btn != 'draw' && btn != 'erase') toggleHover(obj);
 	else setMode(obj);
-
-	//canvas.html('Pressed ' + btn + ' button');
 })
 
 $('#size_slider').on('pointerup mouseup touchend', function(e){
@@ -104,8 +158,6 @@ $('#size_slider').on('pointerup mouseup touchend', function(e){
 	var size = (parseInt(obj.val())+1)/10;
 	if (mode == 'erase') eraserSize = size;
 	else if (mode == 'draw') brushSize = size;
-	
-	//canvas.html('Width changed to: ' + size);
 });
 
 function hover (jObj) {
@@ -195,13 +247,13 @@ function fadeInTileBarContents (t) {
  * tile sidebar controls *
  *************************/
 
-var tiles = []; //one per viewable user
-var tileIndex = 0; //index in 'tiles' array of topmost viewing tile
+var filteredTiles = []; //one per viewable user
+var tileIndex = 0; //index in 'filteredTiles' array of topmost viewing tile
 var tileCapacity = 0; //how many tiles can visually fit in container
+var viewingTile = undefined;
 refreshTileSidebar();
 
 //testing
-/*
 setTimeout(function (){
 	tileAdd('user4', 'blue', false);
 	tileAdd('user5', 'green', true);
@@ -211,33 +263,9 @@ setTimeout(function (){
 	tileAdd('user9', 'green', true);
 	tileAdd('user10', 'green', true);
 	tileAdd('user11', 'green', true);
-	tileAdd('user12', 'blue', false);
-	tileAdd('user13', 'green', true);
-	tileAdd('user14', 'green', true);
-	tileAdd('user15', 'green', true);
-	tileAdd('user16', 'green', true);
-	tileAdd('user17', 'green', true);
-	tileAdd('user18', 'green', true);
-	tileAdd('user19', 'green', true);
-	alert('lvl1');
-	setTimeout(function (){
-		tileChange('user4', 'blue', false);
-		tileChange('user19', 'purple', false);
-		alert('lvl2');
-		setTimeout(function (){
-			tileRemove('user5');
-			tileRemove('user7');
-			alert('lvl3');
-			setTimeout(function (){
-				tileRemove('user19');
-				alert('lvl4');
-			}, 4000);
-		}, 4000);
-	}, 4000);
 }, 4000);
-*/
 
-tCont.resize(function() {refreshTileSidebar()});
+$(window).resize(function () { refreshTileSidebar() });
 
 function refreshTileSidebar () {
 	var tile = $('<div class=tile></div>');
@@ -247,6 +275,7 @@ function refreshTileSidebar () {
 	
 	tileCapacity = newTileCapacity;
 	refreshTileCont();
+	refreshUpBtn();
 	refreshDownBtn();
 }
 
@@ -261,7 +290,7 @@ $('#btn_up').click(function(e){
 });
 
 $('#btn_down').click(function(e){
-	var newTileIndex = Math.min(tileIndex + tileCapacity, tiles.length - 1);
+	var newTileIndex = Math.min(tileIndex + tileCapacity, filteredTiles.length - 1);
 	if (tileIndex != newTileIndex) {
 		tileIndex = newTileIndex;
 		refreshTileCont();
@@ -274,8 +303,8 @@ $('#btn_down').click(function(e){
 function tileChange (username, tribe, active) {
 	var i = getTileIndex(username);
 	if (i !== -1) {
-		tiles[i].tribe = tribe;
-		tiles[i].active = active;
+		filteredTiles[i].tribe = tribe;
+		filteredTiles[i].active = active;
 			
 		var tile = $('#' + username);
 		if (tile.length !== 0) { //being displayed, update tile
@@ -296,8 +325,8 @@ function tileAdd (username, tribe, active) {
 		tileChange(username, tribe, active); //already exists, update
 		return;
 	}
-	tiles.push({username: username, tribe: tribe, active: active});
-	if (tiles.length - tileIndex <= tileCapacity)
+	filteredTiles.push({username: username, tribe: tribe, active: active});
+	if (filteredTiles.length - tileIndex <= tileCapacity)
 		addTileToView(username, tribe, active); //add to viewing tiles
 		
 	refreshDownBtn();
@@ -309,26 +338,26 @@ function tileRemove (username) {
 	if (i === -1) return; //is not there to remove
 	
 	if (i < tileIndex) {
-		tiles.splice(i,1);
+		filteredTiles.splice(i,1);
 		tileIndex = tileIndex - 1;
 		refreshUpBtn();
 	} else if (i >= tileIndex + tileCapacity) {
-		tiles.splice(i,1);
+		filteredTiles.splice(i,1);
 		refreshDownBtn();
 	} else { //currently viewed in sidebar
-		tiles.splice(i,1);
+		filteredTiles.splice(i,1);
 		var tile = $('#' + username);
 		if (tile.length !== 0) tile.remove();
 		
 		var tileShiftedIntoView = tileIndex + tileCapacity - 1;
-		if (tileShiftedIntoView < tiles.length) {
-			var t = tiles[tileShiftedIntoView];
+		if (tileShiftedIntoView < filteredTiles.length) {
+			var t = filteredTiles[tileShiftedIntoView];
 			addTileToView(t.username, t.tribe, t.active);
 		}
 		refreshDownBtn();
 		
 		//if no more tiles in view
-		if (tileIndex >= tiles.length) $('#btn_up').click();
+		if (tileIndex >= filteredTiles.length) $('#btn_up').click();
 	}
 }
 
@@ -343,23 +372,28 @@ function addTileToView (username, tribe, active) {
 	tile.css('background-image', newAddr);
 	
 	tile.click(function(e){
-		var username = $(this).attr('id');
-		if (getTileIndex(username) === -1) {
+
+		console.log("this should be happening");
+		var newUsername = $(this).attr('id');
+		if (getTileIndex(newUsername) === -1) {
 			refreshTileCont();
 			return;
 		}
 		canvasImg.fadeOut(300);
-
-		//TODO: call following when image sent through sockets
-		var dataURL = canvas0[0].toDataURL(); //TODO: replace with live sketch
-		canvasImg.attr('src', dataURL);
-		canvasImg.fadeIn(300);
+		
+		//console.log(viewingTile);
+		if (viewingTile !== undefined) {
+			//socket.emit('noView', viewingTile);//////////////////////////////////////
+			//console.log('this is being called');/////////////////////////////////////
+		}
+		viewingTile = newUsername;
+		//socket.emit('viewSketch', newUsername);//////////////////////////////////////s
 	});
 }
 
 function getTileIndex (username) {
-	for (var i in tiles) {
-		if (tiles[i].username === username)
+	for (var i in filteredTiles) {
+		if (filteredTiles[i].username === username)
 			return i;
 	}
 	return -1;
@@ -377,17 +411,89 @@ function refreshUpBtn () {
 }
 
 function refreshDownBtn () {
-	if (tileIndex + tileCapacity < tiles.length) $('#btn_down').fadeIn(30);
+	if (tileIndex + tileCapacity < filteredTiles.length) $('#btn_down').fadeIn(30);
 	else $('#btn_down').fadeOut(30);
 }
 
 function refreshTileCont () {
 	tCont.empty();
-	for (i = 0; i < tileCapacity && tileIndex + i < tiles.length; i++) {
-		var t = tiles[tileIndex + i];
+	for (i = 0; i < tileCapacity && tileIndex + i < filteredTiles.length; i++) {
+		var t = filteredTiles[tileIndex + i];
 		addTileToView(t.username, t.tribe, t.active);
 	}
 }
+
+/******************
+ * tile filtering *
+ ******************/
+
+var showActiveClicked = true;
+var showPostedClicked = true;
+var filterColor = 'all';
+var filterColorOptions = ['all','blue','green','yellow','orange','red','purple'];
+hover($('#btn_posted'));
+hover($('#btn_active'));
+
+//fStatus can be 'all', 'active' or 'posted'
+function tileFilter (fStatus, fTribe) {
+	var foundMatch = false;
+	var newTilesInView = [];
+	
+	for (i = 0; i < allTiles.length; i++) {
+		var t = allTiles[i];
+		var statusValid = (fStatus == 'all')|(fStatus==(t.active?'active':'posted'));
+		var colorValid = (fTribe == 'all' | t.tribe == fTribe);
+		if (statusValid && colorValid) {
+			newTilesInView.push(t);
+			foundMatch = true;
+		}
+	}
+	tilesInView = newTilesInView;
+	refreshTileCont();
+	return foundMatch;
+}
+
+$('#btn_active').click(function(e){
+	if (showActiveClicked === true) {
+		showActiveClicked = false;
+		unhover($(this));
+		if (showPostedClicked) tileFilter('posted', filterColor);
+		else $('#btn_posted').click();
+	} else {
+		showActiveClicked = true;
+		hover($(this));
+		if (showPostedClicked) tileFilter('all', filterColor);
+		else tileFilter('active', filterColor);
+	}
+});
+
+$('#btn_posted').click(function(e){
+	if (showPostedClicked === true) {
+		showPostedClicked = false;
+		unhover($(this));
+		if (showActiveClicked) tileFilter('active', filterColor);
+		else $('#btn_active').click();
+	} else {
+		showPostedClicked = true;
+		hover($(this));
+		if (showActiveClicked) tileFilter('all', filterColor);
+		else tileFilter('posted', filterColor);
+	}
+});
+
+$('#btn_tribe').click(function(e){
+	if (allTiles.length == 0) return;
+	var colorsTried = 0;
+	var stat =(showPostedClicked ?(showActiveClicked ?'all':'posted'):'active');
+	
+	while (colorsTried < filterColorOptions.length) {
+		var i = filterColorOptions.indexOf(filterColor);
+		filterColor = filterColorOptions[++i % filterColorOptions.length];
+		
+		if (tileFilter(stat, filterColor)) return; //found tiles of color
+		colorsTried++;
+	}
+});
 
 /***********************************************
  * 'touch' event handling for sidebar dragging *
@@ -456,6 +562,7 @@ $(document).on('mousemove pointermove', function(e){
 		oBarMove(parseInt(e.clientY));
 		e.preventDefault();
 	}
+	if (drawing === true) findxy('move', e.originalEvent);
 })
 
 $(document).on('mouseup pointerup', function(e){
@@ -469,6 +576,8 @@ $(document).on('mouseup pointerup', function(e){
 		oBarRelease();
 		e.preventDefault();
 	}
+	drawing = false;
+	//send('sketch');/////////////////////
 })
 
 /*****************************************************
@@ -476,6 +585,10 @@ $(document).on('mouseup pointerup', function(e){
  *****************************************************/
 
 function vBarGrab(y) {
+	if (viewingTile !== undefined) {
+		socket.emit('noView', viewingTile);
+		viewingTile = undefined;
+	}
 	sidebarGrabbed();
 	vBar.css('z-index', '5');
 	oBar.css('z-index', '4');
@@ -512,6 +625,9 @@ function vBarRelease() {
 		tBar.css('display', 'inline-block');
 		canvasImg.fadeIn(300);
 		fadeInTileBarContents(300);
+		if (filteredTiles.length !== 0) {
+			$('#tile_container:first-child').click();
+		}
 	}
 }
 
@@ -576,6 +692,7 @@ var drawing = false,
 	prevY = 0,
 	currY = 0;
 var trackimage = new Array();
+trackimage.push(canvas0[0].toDataURL());
 var step = 0;
 $('#btn_undo').css("pointer-events", "none");
 $('#btn_redo').css("pointer-events", "none");
@@ -608,19 +725,20 @@ function findxy(res, e) {
 	if (res == 'down') {
 		currX = e.clientX - canvas0[0].offsetLeft;
 		currY = e.clientY - canvas0[0].offsetTop;
-		push();
 		drawing = true;
 		ctx.beginPath();
 		ctx.fillStyle = (mode == 'erase') ? 'white' : color;
 		ctx.arc(currX, currY, brushSize/2, 0, 2*Math.PI);
 		ctx.fill();
-		//TODO: start keeping track of line  
 	}
-	if (res == 'up' || res == "out") {
+	if (res == 'up') {
+		if(drawing == true) {
+			//send('sketch');/////////////////////
+		}
 		drawing = false;
-		//TODO: finalize line, send to server
+		push();
 	}
-	if (res == 'move') {
+	if (res == 'move' || res == 'out') {
 		if (drawing) {
 			prevX = currX;
 			prevY = currY;
@@ -628,7 +746,6 @@ function findxy(res, e) {
 			currY = e.clientY - canvas0[0].offsetTop;
 			draw();
 		}
-		//TODO: add point to line  
 	}
 }
 
@@ -641,6 +758,11 @@ function push(){
 	if (trackimage.indexOf(canvas0[0].toDataURL()) == -1){
 		trackimage.push(canvas0[0].toDataURL());
 	}
+	if (step > undolimit){
+		step = undolimit;
+		trackimage.shift();
+	}
+	
 }
 
 /******************************
@@ -663,11 +785,11 @@ $('#btn_undo').click(function(e){
 		oldtrack.src = trackimage[step];
 		ctx.clearRect(0, 0, canvas0[0].width, canvas0[0].height);
 		oldtrack.onload = function (){ctx.drawImage(oldtrack,0,0);}
+		if (step == 0){
+			$('#btn_undo').css("pointer-events", "none");
+		}
 	}
-	if (step == 0){
-		$('#btn_undo').css("pointer-events", "none");
-	}
-	//TODO: adjust canvas layer visibility, notify server	
+	//send('sketch');///////////////////////////
 });
 
 $('#btn_redo').click(function(e){
@@ -677,14 +799,12 @@ $('#btn_redo').click(function(e){
 			newtrack.src = trackimage[step];
 			ctx.clearRect(0, 0, canvas0[0].width, canvas0[0].height);
 			newtrack.onload = function() {ctx.drawImage(newtrack,0,0);}
+			if (step == trackimage.length-1){
+				$('#btn_redo').css("pointer-events", "none");
+			$('#btn_undo').css("pointer-events", "auto");
+		}
 	}
-	if (step == trackimage.length-1){
-		$('#btn_redo').css("pointer-events", "none");
-		$('#btn_undo').css("pointer-events", "auto");
-	}
-	
-	//TODO: adjust canvas layer visibility, notify server
-	
+	//send('sketch');///////////////////////
 });
 
 $('#btn_save').click(function(e){
@@ -694,7 +814,8 @@ $('#btn_save').click(function(e){
 $('#btn_clear').click(function(e){
 	if (confirm('This will clear your sketch, are you sure?')) {
 		canvasImg.fadeOut(300);
-		
+		trackimage = [];
+		step = 0;
 		ctx.fillStyle = 'white'; //clear canvas
 		ctx.fillRect(0, 0, canvas0[0].width, canvas0[0].height);
 		ctx.fill();
@@ -722,9 +843,10 @@ $('#btn_mirror').click(function(e){
 });
 
 $('#btn_post').click(function(e){
-	
-	//TODO: prompt and permanently post picture
-	
+	var notes = prompt("This will permanently submit your sketch. Add any notes here:");
+	if (notes != null) {
+		//send('submit', notes);/////////////////////////////////////////////
+	}
 });
 
 $('#btn_tribes').click(function(e){
@@ -739,6 +861,7 @@ $('#btn_tribes').click(function(e){
 	changeTribe($('#small_screen_msg'), tribe, newTribe);
 	
 	tribe = newTribe;
+	//socket.emit('updateTribe', tribe);///////////////////////////////////////
 });
 
 function changeTribe (obj, oldTribe, newTribe) {
