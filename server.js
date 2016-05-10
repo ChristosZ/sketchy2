@@ -153,7 +153,7 @@ io.sockets.on('connection', function(socket) {
 
 			_.each(val.people, function(val, key, obj) {
 				if(val.disconnected === false) active++;
-			}
+			})
 			
 			socket.emit('addRoom', val.name, val.tribe, active, _.size(val.submitted));
 		})

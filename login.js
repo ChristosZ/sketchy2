@@ -146,6 +146,8 @@ $("#roomname").focus(function(){
 	}
 })
 
+$('#btn_draw').click(function () { $("#nickname2").focus(); });
+
 $('.go_join').click(function () {
 	firstPage.hide();
 	hostPage.hide();
