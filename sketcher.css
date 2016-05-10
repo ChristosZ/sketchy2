@@ -214,8 +214,8 @@ div {
 #btn_redo .help { background-image: url('img/blue/redo.svg'); }
 #view_drag .help { background-image: url('img/blue/view.svg'); }
 #options_drag .help { background-image: url('img/blue/options.svg'); }
-#btn_active .help { background-image: url('img/blue/draw.svg'); }
-#btn_posted .help { background-image: url('img/blue/post.svg'); }
+#btn_active .help { background-image: url('img/blue/active.svg'); }
+#btn_posted .help { background-image: url('img/blue/posted.svg'); }
 #btn_tribe { background-image: url('img/blue/tribe.png'); }
 #btn_tribe .help { background-image: url('img/blue/tribe.svg'); }
 #btn_save .help { background-image: url('img/blue/save.svg'); }
