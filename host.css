@@ -88,6 +88,14 @@ div {
 	background-size: 100% 100%;
 }
 
+.btn .help {
+	height: 100%;
+	width: 100%;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
 .large {
 	position: absolute;
 	top: 0px;
@@ -164,40 +172,41 @@ div {
 @media only screen and (max-height: 92mm) {#small_screen {display: block;}}
 @media only screen and (orientation: portrait) {#rotate_screen {display: block;}}
 
-/*#btn_colorwheel { background-image: url('img/blue/colorwheel.png'); }*/
-#btn_canvas_hide { background-image: url('img/blue/canvas_hide.png'); }
-#btn_canvas_show { background-image: url('img/blue/canvas_show.png'); }
-#btn_sketches_hide { background-image: url('img/blue/sketches_hide.png'); }
-#btn_sketches_show { background-image: url('img/blue/sketches_show.png'); }
-#btn_draw { background-image: url('img/blue/draw.png'); }
-#btn_erase { background-image: url('img/blue/erase.png'); }
-#btn_undo { background-image: url('img/blue/undo.png'); }
-#btn_redo { background-image: url('img/blue/redo.png'); }
-#btn_active { background-image: url('img/blue/active.png'); }
-#btn_posted { background-image: url('img/blue/posted.png'); }
-#btn_save { background-image: url('img/blue/save.png'); }
-#btn_post { background-image: url('img/blue/post.png'); }
-#btn_clear { background-image: url('img/blue/clear_canvas.png'); }
-#btn_zoom_out { background-image: url('img/blue/zoom_out.png'); }
-#btn_zoom_in { background-image: url('img/blue/zoom_in.png'); }
-#btn_save_all { background-image: url('img/blue/save_all.png'); }
-#btn_tribes { background-image: url('img/blue/tribe.png'); }
-#btn_slideshow_active { background-image: url('img/blue/active.png'); }
-#btn_slideshow_posted { background-image: url('img/blue/posted.png'); }
-#btn_view_selected { background-image: url('img/blue/view_selected.png'); }
-#btn_view_random { background-image: url('img/blue/view_random.png'); }
-#btn_pause { background-image: url('img/blue/empty.png'); }
-#btn_play_slow { background-image: url('img/blue/empty.png'); }
-#btn_play_fast { background-image: url('img/blue/empty.png'); }
+.hover { background-image: url('img/blue/empty.png'); }
+#btn_draw .help { background-image: url('img/blue/draw.svg'); }
+#btn_erase .help { background-image: url('img/blue/erase.svg'); }
+#btn_undo .help { background-image: url('img/blue/undo.svg'); }
+#btn_redo .help { background-image: url('img/blue/redo.svg'); }
+#btn_active .help { background-image: url('img/blue/active.svg'); }
+#btn_posted .help { background-image: url('img/blue/posted.svg'); }
 #btn_tribe { background-image: url('img/blue/tribe.png'); }
-#btn_help { background-image: url('img/blue/help.png'); }
-#btn_mirror { background-image: url('img/blue/mirror.png'); }
-#btn_close { background-image: url('img/blue/close_room.png'); }
+#btn_tribe .help { background-image: url('img/blue/tribe.svg'); }
+#btn_save .help { background-image: url('img/blue/save.svg'); }
+#btn_post .help { background-image: url('img/blue/post.svg'); }
+#btn_mirror .help { background-image: url('img/blue/mirror.svg'); }
+#btn_clear .help { background-image: url('img/blue/clear_canvas.svg'); }
+#btn_tribes { background-image: url('img/blue/tribe.png'); }
+#btn_tribes .help { background-image: url('img/blue/tribe.svg'); }
+#btn_canvas_hide .help { background-image: url('img/blue/canvas_hide.svg'); }
+#btn_canvas_show .help { background-image: url('img/blue/canvas_show.svg'); }
+#btn_sketches_hide .help { background-image: url('img/blue/sketches_hide.svg'); }
+#btn_sketches_show .help { background-image: url('img/blue/sketches_show.svg'); }
+
+#btn_zoom_out .help { background-image: url('img/blue/zoom_out.svg'); }
+#btn_zoom_in .help { background-image: url('img/blue/zoom_in.svg'); }
+#btn_save_all .help { background-image: url('img/blue/save_all.svg'); }
+#btn_slideshow_active .help { background-image: url('img/blue/active.svg'); }
+#btn_slideshow_posted .help { background-image: url('img/blue/posted.svg'); }
+#btn_view_selected .help { background-image: url('img/blue/view_selected.svg'); }
+#btn_view_random .help { background-image: url('img/blue/view_random.svg'); }
+#btn_pause .help { background-image: url('img/blue/slideshow_pause.svg'); }
+#btn_play_slow .help { background-image: url('img/blue/slideshow_slow.svg'); }
+#btn_play_fast .help { background-image: url('img/blue/slideshow_fast.svg'); }
+#btn_help .help { background-image: url('img/blue/help.svg'); }
+#btn_close .help { background-image: url('img/blue/close_room.svg'); }
 #rotate_screen { background-image: url('img/blue/bar_top.png'); }
 #rotate_screen_msg { background-image: url('img/blue/rotate_screen.png'); }
 #small_screen { background-image: url('img/blue/bar_top.png'); }
 #small_screen_msg { background-image: url('img/blue/small_screen.png'); }
-#btn_up { background-image: url('img/blue/post.png'); }
-#btn_down { background-image: url('img/blue/save.png'); }
 #left_sidebar { background-image: url('img/blue/bar_left.png'); }
 #right_sidebar { background-image: url('img/blue/bar_right.png'); }

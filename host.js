@@ -117,21 +117,18 @@ $('#size_slider').on('pointerup mouseup touchend', function(e){
 
 function hover (jObj) {
 	var addr = jObj.css('background-image');
-	if (addr.indexOf('_h.png') != -1) return;
 	if (addr.indexOf('_c.png') == -1)
 		jObj.css('background-image', addr.replace('.png','_c.png'));
 }
 
 function unhover (jObj) {
 	var addr = jObj.css('background-image');
-	if (addr.indexOf('_h.png') != -1) return;
 	if (addr.indexOf('_c.png') != -1)
 		jObj.css('background-image', addr.replace('_c.png','.png'));
 }
 
 function toggleHover (jObj) {
 	var addr = jObj.css('background-image');
-	if (addr.indexOf('_h.png') != -1) return;
 	if (addr.indexOf('_c.png') != -1)
 		jObj.css('background-image', addr.replace('_c.png','.png'));
 	else
@@ -157,30 +154,22 @@ function setMode (jObj) {
 }
 
 function help (jObj) {
-	var addr = jObj.css('background-image');
-	if (addr.indexOf('_c.png') != -1) {
-		addr = addr.replace('_c.png','_h.png');
+	var addr = jObj.css('background-image');	
+	if (addr.indexOf('.png') != -1 && addr.indexOf('_h.png') == -1) {
+		addr = addr.replace('.png','_h.png');
+		jObj.css('background-image', addr);
 	}
-	else {
-		if (addr.indexOf('_h.png') == -1) {
-		addr = addr.replace('.png','_h.png'); }
+	else if (addr.indexOf('.svg') != -1 && addr.indexOf('_h.svg') == -1) {
+		addr = addr.replace('.svg','_h.svg');
+		jObj.css('background-image', addr);
+
 	}
-	
-	jObj.css('background-image', addr);
 }
 
 function unhelp (jObj) {
-	var id = jObj.attr('id').substring(4);
 	var addr = jObj.css('background-image');
-	jObj.css('background-image', addr.replace('_h.png','.png'));
-	
-	if (mode == 'draw') hover(drawBtn);
-	else if (mode == 'erase') hover(eraseBtn);
-	
-	if (id == 'active' && showActiveClicked) { hover(jObj); }
-	if (id == 'posted' && showPostedClicked) { hover(jObj); }
+	jObj.css('background-image', addr.replace('_h.png','.png').replace('_h.svg','.svg'));	
 }
-
 
 $('#btn_help').hover(function(e){
 	$('.help').each(function(i) { help($(this)); });
@@ -202,14 +191,14 @@ $('#btn_canvas_hide').click(function(e){
 	if (showingTiles()) { //slideshow mode
 		canvasImg.attr('src', canvas0[0].toDataURL());
 		$('#canvas_img').show();
-		$('#left_sidebar_container2').show();
+//		$('#left_sidebar_container2').show();
 	}
 });
 
 $('#btn_canvas_show').click(function(e){
 	$('#btn_canvas_show').hide();
 	$('#btn_canvas_hide').show();
-	$('#left_sidebar_container2').hide();
+//	$('#left_sidebar_container2').hide();
 	$('#left_sidebar_container').show();
 	$('#canvas_img').hide();
 	$('#canvas').show();
@@ -220,9 +209,9 @@ $('#btn_sketches_hide').click(function(e){
 	$('#btn_sketches_hide').hide();
 	$('#right_sidebar_container').hide();
 	$('#right_sidebar_container2').show();
-	$('#tiles_container').hide();
+	$('#tile_container').hide();
 	$('#canvas_img').hide();
-	$('#left_sidebar_container2').hide();
+//	$('#left_sidebar_container2').hide();
 });
 
 $('#btn_sketches_show').click(function(e){
@@ -230,10 +219,10 @@ $('#btn_sketches_show').click(function(e){
 	$('#btn_sketches_hide').show();
 	$('#right_sidebar_container2').hide();
 	$('#right_sidebar_container').show();
-	$('#tiles_container').show();
+	$('#tile_container').show();
 	if (!showingCanvas()) {
 		$('#canvas_img').show();
-		$('#left_sidebar_container2').show();
+//		$('#left_sidebar_container2').show();
 	}
 });
 
@@ -263,13 +252,14 @@ var showActiveClicked = true;
 var showPostedClicked = true;
 var filterColor = 'all';
 var filterColorOptions = ['all','blue','green','yellow','orange','red','purple'];
+var viewingTile = undefined;
 hover($('#btn_posted'));
 hover($('#btn_active'));
 
 refreshTiles();
 $(window).resize(function() {refreshTileSizes()});
 
-
+//testing
 tileAdd('user2','green',false);
 tileAdd('user4','purple',false);
 tileAdd('user5','blue',true);
@@ -290,13 +280,22 @@ tileAdd('user028','purple',true);
 tileAdd('user029','blue',true);
 tileAdd('user0260','yellow',true);
 
+//call on 'sketch update' socket event
+function sketchUpdate (username, dataURL) {
+	var tile = $('#' + username);
+	if (tile.length !== 0) {
+		tile.attr('src', dataURL);
+		if (username == viewingTile) canvasImg.attr('src', dataURL);
+	}
+}
+
 //call on 'updated user' socket event
 function tileChange (username, tribe, active) {
 	var i = getTileIndex(username);
 	if (i !== -1) {
 		tiles[i].tribe = tribe;
 		tiles[i].active = active;
-			
+		
 		var tile = $('#' + username);
 		if (tile.length !== 0) tile.css('border-color', borderColors[tribe]);
 		return;
@@ -328,7 +327,6 @@ function tileRemove (username) {
 function addTileToView (username, tribe, active) {
 	var tile = $('<img class=tile></canvas>');
 	tile.attr('id', username);
-	//TODO: replace with live sketch
 	tile.attr('src', canvas0[0].toDataURL());
 	tile.css('border-color', borderColors[tribe]);
 	tCont.append(tile);
@@ -341,9 +339,12 @@ function addTileToView (username, tribe, active) {
 		}
 		if (!showingCanvas()) {
 			canvasImg.fadeOut(300);
-			canvasImg.attr('src', canvas0[0].toDataURL());
+			setTimeout(function (){
+				canvasImg.attr('src', $(this).attr('src'));
+			}, 300);
 			canvasImg.fadeIn(300);
 		}
+		viewingTile = username;
 	});
 }
 
