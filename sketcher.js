@@ -877,7 +877,7 @@ $('#btn_clear').click(function(e){
 		ctx.fill();
 		var dataURL = canvas0[0].toDataURL(); //clear canvas image
 		setTimeout(function (){	canvasImg.attr('src', dataURL); }, 300);
-		send('sketch', '');
+		//send('sketch', ''); ///////////////////////
 
 		canvasImg.fadeIn(300).css('display', 'block');
 	}
