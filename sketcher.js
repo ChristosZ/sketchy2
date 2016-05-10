@@ -165,21 +165,18 @@ $('#size_slider').on('pointerup mouseup touchend', function(e){
 
 function hover (jObj) {
 	var addr = jObj.css('background-image');
-	if (addr.indexOf('_h.png') != -1) return;
 	if (addr.indexOf('_c.png') == -1)
 		jObj.css('background-image', addr.replace('.png','_c.png'));
 }
 
 function unhover (jObj) {
 	var addr = jObj.css('background-image');
-	if (addr.indexOf('_h.png') != -1) return;
 	if (addr.indexOf('_c.png') != -1)
 		jObj.css('background-image', addr.replace('_c.png','.png'));
 }
 
 function toggleHover (jObj) {
 	var addr = jObj.css('background-image');
-	if (addr.indexOf('_h.png') != -1) return;
 	if (addr.indexOf('_c.png') != -1)
 		jObj.css('background-image', addr.replace('_c.png','.png'));
 	else
@@ -206,27 +203,16 @@ function setMode (jObj) {
 
 function help (jObj) {
 	var addr = jObj.css('background-image');
-	if (addr.indexOf('_c.png') != -1) {
-		addr = addr.replace('_c.png','_h.png');
+	if (addr.indexOf('_h.png') == -1) {
+		addr = addr.replace('.png','_h.png').replace('.svg','_h.svg');
+		jObj.css('background-image', addr);
 	}
-	else {
-		if (addr.indexOf('_h.png') == -1) {
-		addr = addr.replace('.png','_h.png'); }
-	}
-	
-	jObj.css('background-image', addr);
 }
 
 function unhelp (jObj) {
-	var id = jObj.attr('id').substring(4);
 	var addr = jObj.css('background-image');
-	jObj.css('background-image', addr.replace('_h.png','.png'));
+	jObj.css('background-image', addr.replace('_h.png','.png').replace('_h.svg','.svg'));
 	
-	if (mode == 'draw') hover(drawBtn);
-	else if (mode == 'erase') hover(eraseBtn);
-	
-	if (id == 'active' && showActiveClicked) { hover(jObj); }
-	if (id == 'posted' && showPostedClicked) { hover(jObj); }
 }
 
 function centerImage (jObj) {

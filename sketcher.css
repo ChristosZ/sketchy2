@@ -82,6 +82,14 @@ div {
 	background-position: center center;
 }
 
+.btn .help {
+	height: 100%;
+	width: 100%;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
 .colorbtn {
 	position: absolute;
 	width:6mm;
@@ -199,20 +207,21 @@ div {
 }
 
 /*#btn_colorwheel { background-image: url('img/blue/colorwheel.png'); }*/
-#btn_draw {	background-image: url('img/blue/draw.png'); }
-#btn_erase { background-image: url('img/blue/erase.png'); }
-#btn_undo { background-image: url('img/blue/undo.png'); }
-#btn_redo { background-image: url('img/blue/redo.png'); }
-#view_drag { background-image: url('img/blue/view.png'); }
-#options_drag { background-image: url('img/blue/options.png'); }
-#btn_active { background-image: url('img/blue/draw.png'); }
-#btn_posted { background-image: url('img/blue/post.png'); }
-#btn_tribe { background-image: url('img/blue/tribe.png'); }
-#btn_save { background-image: url('img/blue/save.png'); }
-#btn_post { background-image: url('img/blue/post.png'); }
-#btn_mirror { background-image: url('img/blue/mirror.png'); }
-#btn_clear { background-image: url('img/blue/clear.png'); }
-#btn_tribes { background-image: url('img/blue/tribe.png'); }
+.hover { background-image: url('img/blue/empty.png'); }
+#btn_draw .help { background-image: url('img/blue/draw.svg'); }
+#btn_erase .help { background-image: url('img/blue/erase.png'); }
+#btn_undo .help { background-image: url('img/blue/undo.png'); }
+#btn_redo .help { background-image: url('img/blue/redo.png'); }
+#view_drag .help { background-image: url('img/blue/view.png'); }
+#options_drag .help { background-image: url('img/blue/options.png'); }
+#btn_active .help { background-image: url('img/blue/draw.png'); }
+#btn_posted .help { background-image: url('img/blue/post.png'); }
+#btn_tribe .help { background-image: url('img/blue/tribe.png'); }
+#btn_save .help { background-image: url('img/blue/save.png'); }
+#btn_post .help { background-image: url('img/blue/post.png'); }
+#btn_mirror .help { background-image: url('img/blue/mirror.png'); }
+#btn_clear .help { background-image: url('img/blue/clear.png'); }
+#btn_tribes .help { background-image: url('img/blue/tribe.png'); }
 #rotate_screen { background-image: url('img/blue/bar_top.png'); }
 #rotate_screen_msg { background-image: url('img/blue/rotate_screen.png'); }
 #small_screen { background-image: url('img/blue/bar_top.png'); }
