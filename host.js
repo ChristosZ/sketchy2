@@ -630,6 +630,7 @@ $('#btn_tribes').click(function(e){
 	var newTribe = tribes[++i % tribes.length];
 	
 	$('.btn').each(function(i) {changeTribe($(this), tribe, newTribe)});
+	$('.btn .help').each(function(i) {changeTribe($(this), tribe, newTribe)});
 	$('.sidebar').each(function(i) {changeTribe($(this), tribe, newTribe)});
 	changeTribe($('#rotate_screen'), tribe, newTribe);
 	changeTribe($('#rotate_screen_msg'), tribe, newTribe);
