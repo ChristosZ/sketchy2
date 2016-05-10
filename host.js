@@ -66,7 +66,7 @@ socket.on('tribeUpdated', function(name, tribe) {
 });
 
 socket.on('sketchSubmitted', function(data) {
-
+	tileAdd(data.user, data.tribe, false);
 	sketchUpdate(data.user, data.sketch);
 });
 
