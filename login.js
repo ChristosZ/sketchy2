@@ -1,7 +1,7 @@
 window.addEventListener('load', function(){
-/*
+
 var socket = io.connect();
-//socket.emit('createRoom', 'test', 'user', 'blue');
+socket.emit('reqRooms');
 
 socket.on('addRoom', function (roomname, tribe, active, posted) {
 	addRoom(roomname, tribe, active, posted);
@@ -11,20 +11,17 @@ socket.on('updateRoom', function (roomname, tribe, active, posted) {
 	updateRoom(roomname, tribe, active, posted);
 });
 
-socket.on('removeRoom', function (roomname) {
+socket.on('roomRemoved', function (roomname) {
 	removeRoom(roomname);
 });
 
 socket.on('alert', function (string) {
-	//username or room name taken
 	alert(string);
 });
 
-socket.on('redirect', function (data){
-	//redirect the page to the sketcher
-	//window.location
+socket.on('redirect', function (destination){
+	 window.location.replace(destination);
 });
-*/
 
 var firstPage = $('#first_page');
 var joinPage = $('#join_page');
@@ -65,7 +62,7 @@ $(window).resize(function () {
 });
 
 function addRoomRow (arrayIndex) {
-	var tribe = roomsInView[arrayIndex][0][0];
+	var roomTribe = roomsInView[arrayIndex][0][0];
 	var roomname = roomsInView[arrayIndex][1];
 	var active = roomsInView[arrayIndex][2];
 	var posted = roomsInView[arrayIndex][3];
@@ -86,14 +83,14 @@ function addRoomRow (arrayIndex) {
 	room.click(function(e){
 		roomnameClicked = $(this).attr('id');
 		if (confirm("Would you like to join the room '" + roomnameClicked + "'?")) {
-			//TODO: socket call check username and go to room!
+			socket.emit('joinRoom', roomnameClicked, trackusername ,tribe);
 		}
 	});
 	
 	jRooms.append(room);
 	var bullet = $('#' + roomname + ' .bullet');
 	var bulletImgAddr = bullet.css('background-image');
-	bullet.css('background-image',bulletImgAddr.replace('b.png',tribe[0]+'.png'));
+	bullet.css('background-image',bulletImgAddr.replace('b.png',roomTribe[0]+'.png'));
 }
 
 function refreshRooms () {
@@ -138,6 +135,11 @@ $('.go_join').mouseenter(function(e){ hover($('.go_join .go_btn')); });
 $('.go_join').mouseleave(function(e){ unhover($('.go_join .go_btn')); });
 $('.go_join').on('mousedown touchstart mouseup touchend', function(e){
 	$('.go_join .go_btn').each(function () { toggleHover($(this)); });
+});
+
+$('#go_public').click(function(e){
+	console.log(tribe);
+	socket.emit('createRoom', trackroomname, trackusername, tribe);
 });
 
 $('.go_host').mouseenter(function(e){ hover($('.go_host .go_btn')); });
