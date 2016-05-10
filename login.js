@@ -1,5 +1,5 @@
 window.addEventListener('load', function(){
-
+/*
 var socket = io.connect();
 socket.emit('reqRooms');
 
@@ -22,7 +22,7 @@ socket.on('alert', function (string) {
 socket.on('redirect', function (destination){
 	 window.location.replace(destination);
 });
-
+*/
 var firstPage = $('#first_page');
 var joinPage = $('#join_page');
 var hostPage = $('#host_page');
@@ -83,7 +83,7 @@ function addRoomRow (arrayIndex) {
 	room.click(function(e){
 		roomnameClicked = $(this).attr('id');
 		if (confirm("Would you like to join the room '" + roomnameClicked + "'?")) {
-			socket.emit('joinRoom', roomnameClicked, trackusername ,tribe);
+			//socket.emit('joinRoom', roomnameClicked, trackusername ,tribe);
 		}
 	});
 	
@@ -113,6 +113,46 @@ $('.hover').on('mouseup touchend', function(e){
 	if (id != 'host' && id != 'join') toggleHover(obj);
 })
 
+$("#nickname").focus(function(){
+	if ($("#nickname").val() == 'Nickname'){
+		$("#nickname").val("");
+	}
+}).blur(function(){
+	if ($("#nickname").val() == ''){
+		$("#nickname").val("Nickname");
+	}
+})
+
+$("#nickname2").focus(function(){
+	if ($("#nickname2").val() == 'Nickname'){
+		$("#nickname2").val("");
+	}
+}).blur(function(){
+	if ($("#nickname2").val() == ''){
+		$("#nickname2").val("Nickname");
+	}
+})
+
+$("#search_text").focus(function(){
+	if ($("#search_text").val() == 'Roomname'){
+		$("#search_text").val("");
+	}
+}).blur(function(){
+	if ($("#search_text").val() == ''){
+		$("#search_text").val("Roomname");
+	}
+})
+
+$("#roomname").focus(function(){
+	if ($("#roomname").val() == 'Roomname'){
+		$("#roomname").val("");
+	}
+}).blur(function(){
+	if ($("#roomname").val() == ''){
+		$("#roomname").val("Roomname");
+	}
+})
+
 $('.go_join').click(function () {
 	firstPage.hide();
 	hostPage.hide();
@@ -139,7 +179,7 @@ $('.go_join').on('mousedown touchstart mouseup touchend', function(e){
 
 $('#go_public').click(function(e){
 	console.log(tribe);
-	socket.emit('createRoom', trackroomname, trackusername, tribe);
+	//socket.emit('createRoom', trackroomname, trackusername, tribe);
 });
 
 $('.go_host').mouseenter(function(e){ hover($('.go_host .go_btn')); });
@@ -258,6 +298,7 @@ function toggleTribe () {
 	
 	$('body').css('color', textColors[newTribe]);
 	$('.btn').each(function(i) {changeTribe($(this), tribe, newTribe)});
+	$('.btn .help').each(function(i) {changeTribe($(this), tribe, newTribe)});
 	$('.sidebar').each(function(i) {changeTribe($(this), tribe, newTribe)});
 	changeTribe($('.head_bar'), tribe, newTribe);
 	changeTribe($('#first_page'), tribe, newTribe);
@@ -290,7 +331,10 @@ function hover (jObj) {
 
 function unhover (jObj) {
 	var addr = jObj.css('background-image');
-	if (addr.indexOf('_c.png') != -1)
+	var id = jObj.attr('id');
+	
+	if (id.indexOf(view) != -1) hover(jObj);
+	else if (addr.indexOf('_c.png') != -1)
 		jObj.css('background-image', addr.replace('_c.png','.png'));
 }
 
@@ -371,5 +415,11 @@ function removeRoom(roomname) {
 	}
 	$('.room#' + roomname).remove();
 }
+
+window.addEventListener("beforeunload", function (e) {
+  var confirmationMessage = 'Are you sure you want to leave this room?';
+  e.returnValue = confirmationMessage;
+  return confirmationMessage;
+});
 
 }, false)

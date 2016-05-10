@@ -19,7 +19,7 @@ var oDragGrabbed = false;
 var tribes = ['blue', 'green', 'yellow', 'orange', 'red', 'purple']
 var tribe = 'blue';
 var mode = 'draw';
-var color = 'black';
+var color = 'blue';
 var brushSize = 6;
 var eraserSize = 7;
 var undolimit = 5;
@@ -32,25 +32,26 @@ ctx.fillStyle = 'white'; //canvas is transparent by default
 ctx.fillRect(0, 0, canvas0.width(), canvas0.height());
 ctx.fill();
 
-/*************************
-****** SOCKETS ***********
-**************************/
+/*******************
+ ***** SOCKETS *****
+ *******************/
 /*
 function meta(name) {
-	var tag = document.querySelector('meta[name=' + name + ']');
-	if (tag != null) return tag.content;
-	return '';
+    var tag = document.querySelector('meta[name=' + name + ']');
+    if (tag != null)
+        return tag.content;
+    return '';
 }
-
 var socket = io.connect();
-socket.emit('updateSocket', window.location.pathname);
 
-//TESTINGGGGGG
-var room = 'testroom';
-var name = 'testuser';
-socket.emit('joinRoom', room, name, tribe);
+var userName = meta('userName');
+var roomName = meta('roomName');
+
+socket.emit('updateSocket', userName, roomName);
+send('sketch', '');
 
 function send(mode, notes) {
+ 
 	var dataURL = canvas0[0].toDataURL();
 	if(mode == 'sketch') {
 		socket.emit('updateSketch',dataURL);
@@ -63,40 +64,55 @@ function send(mode, notes) {
 socket.on('userJoined', function(name, tribe){
 	//userJoined should add a new tile for the sketches
 	tileAdd(name, tribe, true);
-	console.log('user' + name + " has joined room the room");
+	console.log('user ' + name + " has joined room.");
 });
 
 socket.on('tribeUpdated', function(name, tribe) {
-	//should find the users tile and change the color
-	console.log(tribe);
+
 	tileChange(name, tribe, true);
 });
 
 socket.on('sketchSubmitted', function(data) {
+
 	tileAdd(data.user, data.tribe, false);
 	//should add the final sketch as a tile
 });
 
 socket.on('sketchUpdated', function(data) {
-	if (data.user == viewingTile) {
-		canvasImg.attr('src', data.sketch);
-		canvasImg.fadeIn(300);
-	}
+
+	data.user;
+	canvasImg.attr('src', data.sketch);
+	canvasImg.fadeIn(300);
+
 });
 
 socket.on('userLeft', function(data) {
 	tileRemove(data);
 });
 
-socket.on('alert', function(string) {
-	alert(string);
+socket.on('alert', function(text) {
+	alert(text);
+});
+
+
+socket.on('start', function(newTribe){
+
+	console.log(newTribe);
+	var i = tribes.indexOf(newTribe);
+	for (n = 0; n < i; n++) {
+		$('#btn_tribes').click();
+	}
+
+	tribe = newTribe;
+});
+
+socket.on('restart', function(tribe, sketch) {
+
+	tribe = tribe;
+	canvas0[0].attr('src', sketch);
+
 });
 */
-///////////////////////////
-
-//TODO: fixes & bugs:
-//click and drag off bottom in IE scrolls a bit
-//IE: pull up options sidebar, then pull down, gets sticky
 
 /****************************
  * General display behavior *
@@ -109,6 +125,9 @@ var rotateMsg = $('#rotate_screen_msg');
 
 canvas.css('margin-top', Math.max((cCont.height() - cCont.width()*0.75)/2, 0));
 rotateMsg.css('margin-top', (cCont.height()-rotateMsg.height())/2);
+//ctx.fillStyle = 'white'; //clear canvas
+//ctx.fillRect(0, 0, canvas0[0].width, canvas0[0].height);
+//ctx.fill();
 
 $(window).resize(function() {
 	canvas.css('margin-top', Math.max((cCont.height() - cCont.width()*0.75)/2, 0));
@@ -202,17 +221,21 @@ function setMode (jObj) {
 }
 
 function help (jObj) {
-	var addr = jObj.css('background-image');
-	if (addr.indexOf('_h.png') == -1) {
-		addr = addr.replace('.png','_h.png').replace('.svg','_h.svg');
+	var addr = jObj.css('background-image');	
+	if (addr.indexOf('.png') != -1 && addr.indexOf('_h.png') == -1) {
+		addr = addr.replace('.png','_h.png');
 		jObj.css('background-image', addr);
+	}
+	else if (addr.indexOf('.svg') != -1 && addr.indexOf('_h.svg') == -1) {
+		addr = addr.replace('.svg','_h.svg');
+		jObj.css('background-image', addr);
+
 	}
 }
 
 function unhelp (jObj) {
 	var addr = jObj.css('background-image');
-	jObj.css('background-image', addr.replace('_h.png','.png').replace('_h.svg','.svg'));
-	
+	jObj.css('background-image', addr.replace('_h.png','.png').replace('_h.svg','.svg'));	
 }
 
 function centerImage (jObj) {
@@ -361,11 +384,11 @@ function addTileToSidebar (username, tribe, active) {
 		
 		//console.log(viewingTile);
 		if (viewingTile !== undefined) {
-			//socket.emit('noView', viewingTile);//////////////////////////////////////
-			//console.log('this is being called');/////////////////////////////////////
+			socket.emit('noView', viewingTile);
+			
 		}
 		viewingTile = newUsername;
-		//socket.emit('viewSketch', newUsername);//////////////////////////////////////s
+		socket.emit('viewSketch', newUsername);
 	});
 }
 
@@ -477,18 +500,6 @@ $('#btn_tribe').click(function(e){
 /**************************************
  * tile add/remove/change for sockets *
  **************************************/
-
-//testing
-setTimeout(function (){
-	tileAdd('user4', 'blue', false);
-	tileAdd('user5', 'green', true);
-	tileAdd('user6', 'yellow', true);
-	tileAdd('user7', 'purple', true);
-	tileAdd('user8', 'green', true);
-	tileAdd('user8', 'green', false);
-	tileAdd('user10', 'orange', true);
-	tileAdd('user11', 'green', true);
-}, 4000);
 
 //call on 'added user' socket event
 function tileAdd (username, tribe, active) {
@@ -779,7 +790,7 @@ function findxy(res, e) {
 	}
 	if (res == 'up') {
 		if(drawing == true) {
-			//send('sketch');/////////////////////
+			//send('sketch'); ////////////////////
 		}
 		drawing = false;
 		push();
@@ -808,7 +819,6 @@ function push(){
 		step = undolimit;
 		trackimage.shift();
 	}
-	
 }
 
 /******************************
@@ -835,7 +845,7 @@ $('#btn_undo').click(function(e){
 			$('#btn_undo').css("pointer-events", "none");
 		}
 	}
-	//send('sketch');///////////////////////////
+	//send('sketch'); ///////////////////
 });
 
 $('#btn_redo').click(function(e){
@@ -850,7 +860,7 @@ $('#btn_redo').click(function(e){
 			$('#btn_undo').css("pointer-events", "auto");
 		}
 	}
-	//send('sketch');///////////////////////
+	//send('sketch'); //////////////////
 });
 
 $('#btn_save').click(function(e){
@@ -867,6 +877,7 @@ $('#btn_clear').click(function(e){
 		ctx.fill();
 		var dataURL = canvas0[0].toDataURL(); //clear canvas image
 		setTimeout(function (){	canvasImg.attr('src', dataURL); }, 300);
+		send('sketch', '');
 
 		canvasImg.fadeIn(300).css('display', 'block');
 	}
@@ -891,7 +902,7 @@ $('#btn_mirror').click(function(e){
 $('#btn_post').click(function(e){
 	var notes = prompt("This will permanently submit your sketch. Add any notes here:");
 	if (notes != null) {
-		//send('submit', notes);/////////////////////////////////////////////
+		send('submit', notes);
 	}
 });
 
@@ -900,6 +911,7 @@ $('#btn_tribes').click(function(e){
 	var newTribe = tribes[++i % tribes.length];
 	
 	$('.btn').each(function(i) {changeTribe($(this), tribe, newTribe)});
+	$('.btn .help').each(function(i) {changeTribe($(this), tribe, newTribe)});
 	$('.sidebar').each(function(i) {changeTribe($(this), tribe, newTribe)});
 	changeTribe($('#rotate_screen'), tribe, newTribe);
 	changeTribe($('#rotate_screen_msg'), tribe, newTribe);
@@ -907,7 +919,7 @@ $('#btn_tribes').click(function(e){
 	changeTribe($('#small_screen_msg'), tribe, newTribe);
 	
 	tribe = newTribe;
-	//socket.emit('updateTribe', tribe);///////////////////////////////////////
+	//socket.emit('updateTribe', tribe); ///////////////////////
 });
 
 function changeTribe (obj, oldTribe, newTribe) {
@@ -915,5 +927,11 @@ function changeTribe (obj, oldTribe, newTribe) {
 	var newAddr = oldAddr.replace('/img/' + oldTribe + '/', '/img/' + newTribe + '/');
 	obj.css('background-image', newAddr);
 }
+
+window.addEventListener("beforeunload", function (e) {
+  var confirmationMessage = 'Are you sure you want to leave this room?';
+  e.returnValue = confirmationMessage;
+  return confirmationMessage;
+});
 
 }, false)

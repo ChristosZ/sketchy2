@@ -107,6 +107,12 @@ div {
 	background-position: center center;
 }
 
+.hover {
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
 .sidebar{
 	display: inline-block;
 	height: 100%;
@@ -262,8 +268,8 @@ input {
 #btn_tribe_2 .help { background-image: url('img/blue/tribe.svg'); }
 #btn_draw .help { background-image: url('img/blue/draw.svg'); }
 .head_bar { background-image: url('img/blue/bar_top.png'); }
-#active_sort { background-image: url('img/common/tile_b_active.png'); }
-#posted_sort { background-image: url('img/common/tile_b_posted.png'); }
+#active_sort { background-image: url('img/common/tile_b_active.svg'); }
+#posted_sort { background-image: url('img/common/tile_b_posted.svg'); }
 #btn_tribe_sort { background-image: url('img/blue/tribe.png'); }
 #btn_tribe_sort .help { background-image: url('img/blue/tribe.svg'); }
 .bullet { background-image: url('img/common/tribe_b.png'); }

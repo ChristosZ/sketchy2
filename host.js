@@ -11,7 +11,7 @@ var ctx = canvas0[0].getContext('2d');
 var tribes = ['blue', 'green', 'yellow', 'orange', 'red', 'purple'];
 var tribe = 'blue';
 var mode = 'draw';
-var color = 'black';
+var color = 'rgb(43,87,153)';
 var brushSize = 6;
 var eraserSize = 7;
 var undolimit = 5;
@@ -501,7 +501,7 @@ function findxy(res, e) {
 	}
 	if (res == 'up') {
 		if (drawing == true) {
-			//send('sketch');/////////////////////
+			//send('sketch');////////////////////////
 		}
 		drawing = false;
 		push();
@@ -646,5 +646,11 @@ function changeTribe (obj, oldTribe, newTribe) {
 	var newAddr = oldAddr.replace('/img/' + oldTribe + '/', '/img/' + newTribe + '/');
 	obj.css('background-image', newAddr);
 }
+
+window.addEventListener("beforeunload", function (e) {
+  var confirmationMessage = 'Are you sure you want to leave this room?';
+  e.returnValue = confirmationMessage;
+  return confirmationMessage;
+});
 
 }, false)

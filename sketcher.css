@@ -196,7 +196,7 @@ div {
 	width: 10mm;
 	height: 10mm;
 	margin: 0 auto;
-	background-image: url('img/common/tile_b_active.png');
+	background-image: url('img/common/tile_b_active.svg');
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center center;
@@ -222,6 +222,7 @@ div {
 #btn_post .help { background-image: url('img/blue/post.svg'); }
 #btn_mirror .help { background-image: url('img/blue/mirror.svg'); }
 #btn_clear .help { background-image: url('img/blue/clear.svg'); }
+#btn_close .help { background-image: url('img/blue/close.svg'); }
 #btn_tribes { background-image: url('img/blue/tribe.png'); }
 #btn_tribes .help { background-image: url('img/blue/tribe.svg'); }
 #rotate_screen { background-image: url('img/blue/bar_top.png'); }
