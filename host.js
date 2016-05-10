@@ -25,6 +25,86 @@ ctx.fillStyle = 'white'; //canvas is transparent by default
 ctx.fillRect(0, 0, canvas0.width(), canvas0.height());
 ctx.fill();
 
+/*************************
+****** SOCKETS ***********
+**************************/
+function meta(name) {
+    var tag = document.querySelector('meta[name=' + name + ']');
+    if (tag != null)
+        return tag.content;
+    return '';
+}
+var socket = io.connect();
+
+var userName = meta('userName');
+var roomName = meta('roomName');
+
+socket.emit('updateSocket', userName, roomName);
+
+send('sketch');
+
+function send(mode, notes) {
+ 
+	var dataURL = canvas0[0].toDataURL();
+	if(mode == 'sketch') {
+		socket.emit('updateSketch',dataURL);
+	}
+	if(mode == 'submit') {
+		socket.emit('submitSketch', dataURL, notes);
+	}
+}
+
+socket.on('userJoined', function(name, tribe){
+	//userJoined should add a new tile for the sketches
+	tileAdd(name, tribe, true);
+	console.log('user ' + name + " has joined room.");
+});
+
+socket.on('tribeUpdated', function(name, tribe) {
+
+	tileChange(name, tribe, true);
+});
+
+socket.on('sketchSubmitted', function(data) {
+
+	sketchUpdate(data.user, data.sketch);
+});
+
+socket.on('sketchUpdated', function(data) {
+	sketchUpdate(data.user, data.sketch);
+});
+
+socket.on('userLeft', function(data) {
+	tileRemove(data);
+});
+
+socket.on('alert', function(text) {
+	alert(text);
+});
+
+
+socket.on('start', function(newTribe){
+	
+	var i = tribes.indexOf(newTribe);
+	for (n = 0; n < i; n++) {
+		$('#btn_tribes').click();
+	}
+
+	tribe = newTribe;
+});
+
+socket.on('restart', function(newTribe, sketch) {
+
+	var i = tribes.indexOf(newTribe);
+	for (n = 0; n < i; n++) {
+		$('#btn_tribes').click();
+	}
+
+	tribe = newTribe;
+	canvas0.attr('src', sketch);
+});
+
+
 //TODO: fixes & bugs:
 //First line takes a while to register?
 //draw off page quickly breaks the line
@@ -259,27 +339,6 @@ hover($('#btn_active'));
 refreshTiles();
 $(window).resize(function() {refreshTileSizes()});
 
-//testing
-tileAdd('user2','green',false);
-tileAdd('user4','purple',false);
-tileAdd('user5','blue',true);
-tileAdd('user6','yellow',true);
-tileAdd('user12','green',false);
-tileAdd('user14','purple',true);
-tileAdd('user15','blue',true);
-tileAdd('user16','yellow',true);
-tileAdd('user22','green',false);
-tileAdd('user24','purple',true);
-tileAdd('user25','blue',true);
-tileAdd('user26','yellow',true);
-tileAdd('user27','green',false);
-tileAdd('user28','purple',false);
-tileAdd('user29','blue',true);
-tileAdd('user260','yellow',false);
-tileAdd('user028','purple',true);
-tileAdd('user029','blue',true);
-tileAdd('user0260','yellow',true);
-
 //call on 'sketch update' socket event
 function sketchUpdate (username, dataURL) {
 	var tile = $('#' + username);
@@ -327,7 +386,9 @@ function tileRemove (username) {
 function addTileToView (username, tribe, active) {
 	var tile = $('<img class=tile></canvas>');
 	tile.attr('id', username);
-	tile.attr('src', canvas0[0].toDataURL());
+	
+	//tile.attr('src', canvas0[0].toDataURL());
+
 	tile.css('border-color', borderColors[tribe]);
 	tCont.append(tile);
 
@@ -501,7 +562,7 @@ function findxy(res, e) {
 	}
 	if (res == 'up') {
 		if (drawing == true) {
-			//send('sketch');////////////////////////
+			send('sketch');
 		}
 		drawing = false;
 		push();
@@ -551,13 +612,15 @@ $('#btn_undo').click(function(e){
 		step --;
 		var oldtrack = new Image();
 		oldtrack.src = trackimage[step];
+		var dURL = trackimage[step];
+		socket.emit('updateSketch', dURL);
 		ctx.clearRect(0, 0, canvas0[0].width, canvas0[0].height);
 		oldtrack.onload = function (){ctx.drawImage(oldtrack,0,0);}
 		if (step == 0){
 			$('#btn_undo').css("pointer-events", "none");
 		}
 	}
-	//send('sketch');///////////////////////////
+
 });
 
 $('#btn_redo').click(function(e){
@@ -565,6 +628,8 @@ $('#btn_redo').click(function(e){
 			step++;
 			var newtrack = new Image();
 			newtrack.src = trackimage[step];
+			var dURL = trackimage[step];
+			socket.emit('updateSketch', dURL);
 			ctx.clearRect(0, 0, canvas0[0].width, canvas0[0].height);
 			newtrack.onload = function() {ctx.drawImage(newtrack,0,0);}
 			if (step == trackimage.length-1){
@@ -572,7 +637,7 @@ $('#btn_redo').click(function(e){
 			$('#btn_undo').css("pointer-events", "auto");
 		}
 	}
-	//send('sketch');///////////////////////
+	
 });
 
 $('#btn_save').click(function(e){
@@ -590,6 +655,7 @@ $('#btn_clear').click(function(e){
 			canvasImg.attr('src', canvas0[0].toDataURL());
 		}, 300);
 		
+		send('sketch');
 		canvas.fadeIn(300).css('display', 'block');
 	}
 });
@@ -621,8 +687,18 @@ $('#btn_mirror').click(function(e){
 $('#btn_post').click(function(e){
 	var notes = prompt("This will permanently submit your sketch. Add any notes here:");
 	if (notes != null) {
-		//send('submit', notes);/////////////////////////////////////////////
+		send('submit', notes);
+		send('sketch');
 	}
+});
+
+$('#btn_save_all').click(function(e){
+	var picsHTML = $('#pics')[0];
+	$('.tile').each(function() {
+		document.getElementById('pics').href = $(this)[0].src;
+		document.getElementById('pics').download = $(this).attr('id') + '.png';
+		document.getElementById('pics').click();
+	});
 });
 
 $('#btn_tribes').click(function(e){
@@ -638,7 +714,7 @@ $('#btn_tribes').click(function(e){
 	changeTribe($('#small_screen_msg'), tribe, newTribe);
 	
 	tribe = newTribe;
-	//socket.emit('updateTribe', tribe);///////////////////////////////////////
+	socket.emit('updateTribe', tribe);
 });
 
 function changeTribe (obj, oldTribe, newTribe) {
@@ -647,10 +723,10 @@ function changeTribe (obj, oldTribe, newTribe) {
 	obj.css('background-image', newAddr);
 }
 
-window.addEventListener("beforeunload", function (e) {
-  var confirmationMessage = 'Are you sure you want to leave this room?';
-  e.returnValue = confirmationMessage;
-  return confirmationMessage;
-});
+// window.addEventListener("beforeunload", function (e) {
+//   var confirmationMessage = 'Are you sure you want to leave this room?';
+//   e.returnValue = confirmationMessage;
+//   return confirmationMessage;
+// });
 
 }, false)

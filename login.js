@@ -1,5 +1,5 @@
 window.addEventListener('load', function(){
-/*
+
 var socket = io.connect();
 socket.emit('reqRooms');
 
@@ -22,7 +22,7 @@ socket.on('alert', function (string) {
 socket.on('redirect', function (destination){
 	 window.location.replace(destination);
 });
-*/
+
 var firstPage = $('#first_page');
 var joinPage = $('#join_page');
 var hostPage = $('#host_page');
@@ -48,13 +48,6 @@ textColors['purple'] = 'rgb(175,96,166)';
 refreshRooms();
 $('#posted_sort').css('margin-right', getScrollBarWidth() + 'px');
 $('#roomname_sort').css('width','calc(100% - 32mm - ' + getScrollBarWidth() + 'px)');
-
-//test values
-addRoom('eeee', 'blue', '1', '80');
-addRoom('eedd', 'yellow', '40', '30');
-addRoom('cccc', 'pink', '30', '47');
-addRoom('bbbb', 'orange', '23', '25');
-addRoom('aaaa', 'green', '50', '61');
 
 $(window).resize(function () {
 	var t = $('#first_page .nav_container');
@@ -83,7 +76,7 @@ function addRoomRow (arrayIndex) {
 	room.click(function(e){
 		roomnameClicked = $(this).attr('id');
 		if (confirm("Would you like to join the room '" + roomnameClicked + "'?")) {
-			//socket.emit('joinRoom', roomnameClicked, trackusername ,tribe);
+			socket.emit('joinRoom', roomnameClicked, trackusername ,tribe);
 		}
 	});
 	
@@ -179,7 +172,7 @@ $('.go_join').on('mousedown touchstart mouseup touchend', function(e){
 
 $('#go_public').click(function(e){
 	console.log(tribe);
-	//socket.emit('createRoom', trackroomname, trackusername, tribe);
+	socket.emit('createRoom', trackroomname, trackusername, tribe);
 });
 
 $('.go_host').mouseenter(function(e){ hover($('.go_host .go_btn')); });
@@ -415,11 +408,5 @@ function removeRoom(roomname) {
 	}
 	$('.room#' + roomname).remove();
 }
-
-window.addEventListener("beforeunload", function (e) {
-  var confirmationMessage = 'Are you sure you want to leave this room?';
-  e.returnValue = confirmationMessage;
-  return confirmationMessage;
-});
 
 }, false)

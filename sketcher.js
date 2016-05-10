@@ -32,10 +32,9 @@ ctx.fillStyle = 'white'; //canvas is transparent by default
 ctx.fillRect(0, 0, canvas0.width(), canvas0.height());
 ctx.fill();
 
-/*******************
- ***** SOCKETS *****
- *******************/
-/*
+/*************************
+****** SOCKETS ***********
+**************************/
 function meta(name) {
     var tag = document.querySelector('meta[name=' + name + ']');
     if (tag != null)
@@ -48,7 +47,8 @@ var userName = meta('userName');
 var roomName = meta('roomName');
 
 socket.emit('updateSocket', userName, roomName);
-send('sketch', '');
+
+send('sketch');
 
 function send(mode, notes) {
  
@@ -58,6 +58,7 @@ function send(mode, notes) {
 	}
 	if(mode == 'submit') {
 		socket.emit('submitSketch', dataURL, notes);
+		console.log(dataURL);
 	}
 }
 
@@ -80,7 +81,6 @@ socket.on('sketchSubmitted', function(data) {
 
 socket.on('sketchUpdated', function(data) {
 
-	data.user;
 	canvasImg.attr('src', data.sketch);
 	canvasImg.fadeIn(300);
 
@@ -96,8 +96,7 @@ socket.on('alert', function(text) {
 
 
 socket.on('start', function(newTribe){
-
-	console.log(newTribe);
+	
 	var i = tribes.indexOf(newTribe);
 	for (n = 0; n < i; n++) {
 		$('#btn_tribes').click();
@@ -108,11 +107,17 @@ socket.on('start', function(newTribe){
 
 socket.on('restart', function(tribe, sketch) {
 
-	tribe = tribe;
+	var i = tribes.indexOf(newTribe);
+	for (n = 0; n < i; n++) {
+		$('#btn_tribes').click();
+	}
+
+	tribe = newTribe;
+
 	canvas0[0].attr('src', sketch);
 
 });
-*/
+
 
 /****************************
  * General display behavior *
@@ -313,7 +318,7 @@ function tileViewChange (username, tribe, active) {
 		if (tile.length !== 0) { //being displayed, update tile
 			var oldAddr = tile.css('background-image');
 			var newAddr = oldAddr.substring(0, oldAddr.length - 14);
-			newAddr = newAddr + tribe.substring(0,1) + '_' + ((active) ? 'active' : 'posted') + '.png")';
+			newAddr = newAddr + tribe.substring(0,1) + '_' + ((active) ? 'active' : 'posted') + '.svg")';
 			tile.css('background-image', newAddr);
 		}
 		return;
@@ -371,7 +376,7 @@ function addTileToSidebar (username, tribe, active) {
 
 	var defaultAddr = tile.css('background-image');
 	var newAddr = defaultAddr.substring(0, defaultAddr.length - 14);
-	newAddr = newAddr + tribe.substring(0,1) + '_' + ((active) ? 'active' : 'posted') + '.png")';
+	newAddr = newAddr + tribe.substring(0,1) + '_' + ((active) ? 'active' : 'posted') + '.svg")';
 	tile.css('background-image', newAddr);
 	
 	tile.click(function(e){
@@ -634,7 +639,7 @@ $(document).on('mouseup pointerup', function(e){
 		e.preventDefault();
 	}
 	drawing = false;
-	//send('sketch');/////////////////////
+	send('sketch');
 })
 
 /*****************************************************
@@ -750,6 +755,7 @@ var drawing = false,
 	currY = 0;
 var trackimage = new Array();
 trackimage.push(canvas0[0].toDataURL());
+document.getElementById('pics').href = trackimage[0];
 var step = 0;
 $('#btn_undo').css("pointer-events", "none");
 $('#btn_redo').css("pointer-events", "none");
@@ -790,7 +796,7 @@ function findxy(res, e) {
 	}
 	if (res == 'up') {
 		if(drawing == true) {
-			//send('sketch'); ////////////////////
+			send('sketch'); ////////////////////
 		}
 		drawing = false;
 		push();
@@ -818,7 +824,8 @@ function push(){
 	if (step > undolimit){
 		step = undolimit;
 		trackimage.shift();
-	}
+	}	
+	document.getElementById('pics').href = trackimage[trackimage.length-1];
 }
 
 /******************************
@@ -836,16 +843,20 @@ $('#btn_undo').click(function(e){
 	}
 	$('#btn_redo').css("pointer-events", "auto");
 	if (step > 0){
-		step --;
+		step--;
 		var oldtrack = new Image();
 		oldtrack.src = trackimage[step];
+
+		var dURL = trackimage[step];
+		socket.emit('updateSketch', dURL);
+
 		ctx.clearRect(0, 0, canvas0[0].width, canvas0[0].height);
 		oldtrack.onload = function (){ctx.drawImage(oldtrack,0,0);}
 		if (step == 0){
 			$('#btn_undo').css("pointer-events", "none");
 		}
 	}
-	//send('sketch'); ///////////////////
+	document.getElementById('pics').href = trackimage[step];
 });
 
 $('#btn_redo').click(function(e){
@@ -853,6 +864,8 @@ $('#btn_redo').click(function(e){
 			step++;
 			var newtrack = new Image();
 			newtrack.src = trackimage[step];
+			var dURL = trackimage[step];
+			socket.emit('updateSketch', dURL);
 			ctx.clearRect(0, 0, canvas0[0].width, canvas0[0].height);
 			newtrack.onload = function() {ctx.drawImage(newtrack,0,0);}
 			if (step == trackimage.length-1){
@@ -860,28 +873,34 @@ $('#btn_redo').click(function(e){
 			$('#btn_undo').css("pointer-events", "auto");
 		}
 	}
-	//send('sketch'); //////////////////
+	document.getElementById('pics').href = trackimage[step];
 });
 
+
+
 $('#btn_save').click(function(e){
-	alert('Right-click or touch and hold image on the right to save on your device.')
+	document.getElementById('pics').click();
 });
 
 $('#btn_clear').click(function(e){
 	if (confirm('This will clear your sketch, are you sure?')) {
 		canvasImg.fadeOut(300);
 		trackimage = [];
+		trackimage.push(canvas0[0].toDataURL());
+		document.getElementById('pics').href = trackimage[0];
 		step = 0;
 		ctx.fillStyle = 'white'; //clear canvas
 		ctx.fillRect(0, 0, canvas0[0].width, canvas0[0].height);
 		ctx.fill();
 		var dataURL = canvas0[0].toDataURL(); //clear canvas image
 		setTimeout(function (){	canvasImg.attr('src', dataURL); }, 300);
-		//send('sketch', ''); ///////////////////////
+		send('sketch');
 
 		canvasImg.fadeIn(300).css('display', 'block');
 	}
 });
+
+
 
 $('#btn_mirror').click(function(e){
 	var bar = $('#sidebar_container');
@@ -919,7 +938,7 @@ $('#btn_tribes').click(function(e){
 	changeTribe($('#small_screen_msg'), tribe, newTribe);
 	
 	tribe = newTribe;
-	//socket.emit('updateTribe', tribe); ///////////////////////
+	socket.emit('updateTribe', tribe);
 });
 
 function changeTribe (obj, oldTribe, newTribe) {
@@ -928,10 +947,11 @@ function changeTribe (obj, oldTribe, newTribe) {
 	obj.css('background-image', newAddr);
 }
 
-window.addEventListener("beforeunload", function (e) {
-  var confirmationMessage = 'Are you sure you want to leave this room?';
-  e.returnValue = confirmationMessage;
-  return confirmationMessage;
-});
+// window.addEventListener("beforeunload", function (e) {
+//   var confirmationMessage = 'Are you sure you want to leave this room?';
+//   e.returnValue = confirmationMessage;
+//   socket.emit('leaveRoom');
+//   return confirmationMessage;
+// });
 
 }, false)
