@@ -99,6 +99,14 @@ div {
 	background-position: center center;
 }
 
+.btn .help {
+	height: 100%;
+	width: 100%;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
 .sidebar{
 	display: inline-block;
 	height: 100%;
@@ -242,18 +250,22 @@ input {
 @media only screen and (max-height: 54mm) {#small_screen {display: block;}}
 @media only screen and (orientation: portrait) {#rotate_screen {display: block;}}
 
+.hover { background-image: url('img/blue/empty.png'); }
 #first_page { background-image: url('img/blue/bar_top.png'); }
 #logo { background-image: url('img/sketchy_logo_color.png'); }
-.go_btn { background-image: url('img/blue/go.png'); }
+.go_btn .help { background-image: url('img/blue/go.svg'); }
 .sidebar{ background-image: url('img/blue/bar_left_wide.png'); }
 #btn_tribe { background-image: url('img/blue/tribe.png'); }
-#btn_search { background-image: url('img/blue/search.png'); }
+#btn_tribe .help { background-image: url('img/blue/tribe.svg'); }
+#btn_search .help { background-image: url('img/blue/search.svg'); }
 #btn_tribe_2 { background-image: url('img/blue/tribe.png'); }
-#btn_draw { background-image: url('img/blue/draw.png'); }
+#btn_tribe_2 .help { background-image: url('img/blue/tribe.svg'); }
+#btn_draw .help { background-image: url('img/blue/draw.svg'); }
 .head_bar { background-image: url('img/blue/bar_top.png'); }
 #active_sort { background-image: url('img/common/tile_b_active.png'); }
 #posted_sort { background-image: url('img/common/tile_b_posted.png'); }
 #btn_tribe_sort { background-image: url('img/blue/tribe.png'); }
+#btn_tribe_sort .help { background-image: url('img/blue/tribe.svg'); }
 .bullet { background-image: url('img/common/tribe_b.png'); }
 #rotate_screen { background-image: url('img/blue/bar_top.png'); }
 #rotate_screen_msg { background-image: url('img/blue/rotate_screen.png'); }

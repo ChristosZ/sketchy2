@@ -289,13 +289,9 @@ function hover (jObj) {
 }
 
 function unhover (jObj) {
-	var id = jObj.attr('id').substring(4,8);
 	var addr = jObj.css('background-image');
-	if (id == view) hover(jObj);
-	else {
-		if (addr.indexOf('_c.png') != -1)
-			jObj.css('background-image', addr.replace('_c.png','.png'));
-	}
+	if (addr.indexOf('_c.png') != -1)
+		jObj.css('background-image', addr.replace('_c.png','.png'));
 }
 
 function toggleHover (jObj) {
