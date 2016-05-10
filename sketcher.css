@@ -77,7 +77,9 @@ div {
 	height: 10mm;
 	width: calc((100% / 2) - 0.1mm);
 	text-align: center;
-	background-size: 100% 100%;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
 }
 
 .colorbtn {

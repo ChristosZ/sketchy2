@@ -170,14 +170,17 @@ function help (jObj) {
 }
 
 function unhelp (jObj) {
+	var id = jObj.attr('id').substring(4);
 	var addr = jObj.css('background-image');
 	jObj.css('background-image', addr.replace('_h.png','.png'));
 	
-	if (mode == 'draw')
-		hover(drawBtn);
-	else if (mode == 'erase')
-		hover(eraseBtn);
+	if (mode == 'draw') hover(drawBtn);
+	else if (mode == 'erase') hover(eraseBtn);
+	
+	if (id == 'active' && showActiveClicked) { hover(jObj); }
+	if (id == 'posted' && showPostedClicked) { hover(jObj); }
 }
+
 
 $('#btn_help').hover(function(e){
 	$('.help').each(function(i) { help($(this)); });
