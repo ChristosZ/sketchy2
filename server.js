@@ -226,6 +226,10 @@ io.sockets.on('connection', function(socket) {
 			socket.emit('sketchUpdated', sketch);
 			console.log('emitting');
 		});
+		
+		_.each(rooms[socket.room].submitted, function(val, key, obj) {
+			socket.emit('sketchSubmitted', val);
+		});
 	});
 
 	socket.on('updateTribe', function(tribe) {
