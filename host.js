@@ -61,7 +61,6 @@ socket.on('userJoined', function(name, tribe){
 });
 
 socket.on('tribeUpdated', function(name, tribe) {
-
 	tileChange(name, tribe, true);
 });
 
@@ -69,6 +68,7 @@ socket.on('sketchSubmitted', function(data) {
 	tileAdd(data.user, data.tribe, false);
 	sketchUpdate(data.user, data.sketch);
 	tileAdd(data.user.substring(0,data.user.indexOf('_')), data.tribe, false);
+	sketchUpdate(data.user.substring(0,data.user.indexOf('_')), data.sketch);
 });
 
 socket.on('sketchUpdated', function(data) {

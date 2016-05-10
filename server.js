@@ -219,7 +219,13 @@ io.sockets.on('connection', function(socket) {
 			console.log(user.tribe);
 			socket.emit('start', user.tribe);
 		}
-			
+		
+		_.each(rooms[socket.room].people, function(val, key, obj) {
+			var sketch = {user: val.name, sketch: val.sketch, tribe: val.tribe};
+			socket.emit('userJoined', val.name, val.tribe);
+			socket.emit('sketchUpdated', sketch);
+			console.log('emitting');
+		});
 	});
 
 	socket.on('updateTribe', function(tribe) {

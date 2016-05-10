@@ -65,7 +65,6 @@ function send(mode, notes) {
 socket.on('userJoined', function(name, tribe){
 	//userJoined should add a new tile for the sketches
 	tileAdd(name, tribe, true);
-	console.log('user ' + name + " has joined room.");
 });
 
 socket.on('tribeUpdated', function(name, tribe) {
@@ -80,7 +79,7 @@ socket.on('sketchSubmitted', function(data) {
 });
 
 socket.on('sketchUpdated', function(data) {
-
+	tileAdd(data.user, data.tribe, true);
 	canvasImg.attr('src', data.sketch);
 	canvasImg.fadeIn(300);
 
@@ -387,13 +386,15 @@ function addTileToSidebar (username, tribe, active) {
 		}
 		canvasImg.fadeOut(300);
 		
-		//console.log(viewingTile);
 		if (viewingTile !== undefined) {
 			socket.emit('noView', viewingTile);
 			
 		}
 		viewingTile = newUsername;
-		socket.emit('viewSketch', newUsername);
+		
+		setTimeout(function(){
+			socket.emit('viewSketch', newUsername);
+		}, 300);
 	});
 }
 
