@@ -209,23 +209,25 @@ div {
 /*#btn_colorwheel { background-image: url('img/blue/colorwheel.png'); }*/
 .hover { background-image: url('img/blue/empty.png'); }
 #btn_draw .help { background-image: url('img/blue/draw.svg'); }
-#btn_erase .help { background-image: url('img/blue/erase.png'); }
-#btn_undo .help { background-image: url('img/blue/undo.png'); }
-#btn_redo .help { background-image: url('img/blue/redo.png'); }
-#view_drag .help { background-image: url('img/blue/view.png'); }
-#options_drag .help { background-image: url('img/blue/options.png'); }
-#btn_active .help { background-image: url('img/blue/draw.png'); }
-#btn_posted .help { background-image: url('img/blue/post.png'); }
-#btn_tribe .help { background-image: url('img/blue/tribe.png'); }
-#btn_save .help { background-image: url('img/blue/save.png'); }
-#btn_post .help { background-image: url('img/blue/post.png'); }
-#btn_mirror .help { background-image: url('img/blue/mirror.png'); }
-#btn_clear .help { background-image: url('img/blue/clear.png'); }
-#btn_tribes .help { background-image: url('img/blue/tribe.png'); }
+#btn_erase .help { background-image: url('img/blue/erase.svg'); }
+#btn_undo .help { background-image: url('img/blue/undo.svg'); }
+#btn_redo .help { background-image: url('img/blue/redo.svg'); }
+#view_drag .help { background-image: url('img/blue/view.svg'); }
+#options_drag .help { background-image: url('img/blue/options.svg'); }
+#btn_active .help { background-image: url('img/blue/draw.svg'); }
+#btn_posted .help { background-image: url('img/blue/post.svg'); }
+#btn_tribe { background-image: url('img/blue/tribe.png'); }
+#btn_tribe .help { background-image: url('img/blue/tribe.svg'); }
+#btn_save .help { background-image: url('img/blue/save.svg'); }
+#btn_post .help { background-image: url('img/blue/post.svg'); }
+#btn_mirror .help { background-image: url('img/blue/mirror.svg'); }
+#btn_clear .help { background-image: url('img/blue/clear.svg'); }
+#btn_tribes { background-image: url('img/blue/tribe.png'); }
+#btn_tribes .help { background-image: url('img/blue/tribe.svg'); }
 #rotate_screen { background-image: url('img/blue/bar_top.png'); }
 #rotate_screen_msg { background-image: url('img/blue/rotate_screen.png'); }
 #small_screen { background-image: url('img/blue/bar_top.png'); }
 #small_screen_msg { background-image: url('img/blue/small_screen.png'); }
-#btn_up { background-image: url('img/blue/post.png'); }
-#btn_down { background-image: url('img/blue/save.png'); }
+#btn_up .help { background-image: url('img/blue/up.svg'); }
+#btn_down .help { background-image: url('img/blue/down.svg'); }
 .sidebar { background-image: url('img/blue/bar_left.png'); }
