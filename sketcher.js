@@ -19,7 +19,7 @@ var oDragGrabbed = false;
 var tribes = ['blue', 'green', 'yellow', 'orange', 'red', 'purple']
 var tribe = 'blue';
 var mode = 'draw';
-var color = 'blue';
+var color = 'rgb(43,87,153)';
 var brushSize = 6;
 var eraserSize = 7;
 var undolimit = 5;
@@ -270,6 +270,13 @@ var filteredTiles = []; //users who pass the filters
 var tileIndex = 0; //index in 'filteredTiles' array of topmost viewing tile
 var tileCapacity = 0; //how many tiles can visually fit in container
 var viewingTile = undefined;
+var borderColors = [];
+borderColors['blue'] = 'rgb(43,87,153)';
+borderColors['green'] = 'rgb(84,131,59)';
+borderColors['yellow'] = 'yellow'; //'rgb(191,147,45)';
+borderColors['orange'] = 'orange'; //'rgb(198,93,40)';
+borderColors['red'] = 'red'; //'rgb(219,54,39)';
+borderColors['purple'] = 'rgb(175,96,166)';
 refreshTileSidebar();
 
 $(window).resize(function () { refreshTileSidebar() });
@@ -649,7 +656,7 @@ $(document).on('mouseup pointerup', function(e){
 
 function vBarGrab(y) {
 	if (viewingTile !== undefined) {
-		//socket.emit('noView', viewingTile); ////////////////////////
+		socket.emit('noView', viewingTile);
 		viewingTile = undefined;
 	}
 	sidebarGrabbed();
@@ -771,6 +778,8 @@ canvas0.on('touchmove',  function(e){findxy('move', e.originalEvent.changedTouch
 canvas0.on('touchleave', function(e){findxy('out',  e.originalEvent.changedTouches[0])});
 canvas0.on('touchend',   function(e){findxy('up',   e.originalEvent.changedTouches[0])});
 
+
+
 function draw() {
 	ctx.beginPath();
 	ctx.strokeStyle = (mode == 'erase') ? 'white' : color;
@@ -797,7 +806,7 @@ function findxy(res, e) {
 	}
 	if (res == 'up') {
 		if(drawing == true) {
-			send('sketch'); ////////////////////
+			send('sketch'); ////////
 		}
 		drawing = false;
 		push();
@@ -834,7 +843,7 @@ function push(){
  ******************************/
 
 $('.colorbtn').click(function(e){
-	color = $(this).attr('id');
+	color = borderColors[$(this).attr('id')];
 	setMode (drawBtn);
 });
 
@@ -877,10 +886,15 @@ $('#btn_redo').click(function(e){
 	document.getElementById('pics').href = trackimage[step];
 });
 
-
-
 $('#btn_save').click(function(e){
 	document.getElementById('pics').click();
+});
+
+$('#btn_close').click(function(e){
+	if (confirm('Are you sure you want to permanently leave this room?')) {
+		socket.emit('leaveRoom');
+		window.location.replace('/');
+	}
 });
 
 $('#btn_clear').click(function(e){
@@ -948,11 +962,11 @@ function changeTribe (obj, oldTribe, newTribe) {
 	obj.css('background-image', newAddr);
 }
 
-// window.addEventListener("beforeunload", function (e) {
-//   var confirmationMessage = 'Are you sure you want to leave this room?';
-//   e.returnValue = confirmationMessage;
-//   socket.emit('leaveRoom');
-//   return confirmationMessage;
-// });
+window.addEventListener("beforeunload", function (e) {
+	var confirmationMessage = 'Are you sure you want to leave this room?';
+	e.returnValue = confirmationMessage;
+	socket.emit('leaveRoom');
+	return confirmationMessage;
+});
 
 }, false)

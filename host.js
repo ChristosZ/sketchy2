@@ -269,11 +269,13 @@ $('#btn_canvas_hide').click(function(e){
 	$('#btn_canvas_hide').hide();
 	$('#left_sidebar_container').hide();
 	$('#canvas').hide();
+	/* buggy
 	if (showingTiles()) { //slideshow mode
 		canvasImg.attr('src', canvas0[0].toDataURL());
 		$('#canvas_img').show();
 //		$('#left_sidebar_container2').show();
 	}
+	*/
 });
 
 $('#btn_canvas_show').click(function(e){
@@ -281,7 +283,7 @@ $('#btn_canvas_show').click(function(e){
 	$('#btn_canvas_hide').show();
 //	$('#left_sidebar_container2').hide();
 	$('#left_sidebar_container').show();
-	$('#canvas_img').hide();
+//	$('#canvas_img').hide();
 	$('#canvas').show();
 });
 
@@ -291,7 +293,7 @@ $('#btn_sketches_hide').click(function(e){
 	$('#right_sidebar_container').hide();
 	$('#right_sidebar_container2').show();
 	$('#tile_container').hide();
-	$('#canvas_img').hide();
+//	$('#canvas_img').hide();
 //	$('#left_sidebar_container2').hide();
 });
 
@@ -301,10 +303,13 @@ $('#btn_sketches_show').click(function(e){
 	$('#right_sidebar_container2').hide();
 	$('#right_sidebar_container').show();
 	$('#tile_container').show();
+	refreshTileSizes();
+	/* buggy	
 	if (!showingCanvas()) {
 		$('#canvas_img').show();
 //		$('#left_sidebar_container2').show();
 	}
+	*/
 });
 
 function showingTiles () {
@@ -324,9 +329,9 @@ var tilesPerLine = 3; //how many tiles to fit lengthwise
 var borderColors = [];
 borderColors['blue'] = 'rgb(43,87,153)';
 borderColors['green'] = 'rgb(84,131,59)';
-borderColors['yellow'] = 'rgb(191,147,45)';
-borderColors['orange'] = 'rgb(198,93,40)';
-borderColors['red'] = 'rgb(219,54,39)';
+borderColors['yellow'] = 'yellow'; //'rgb(191,147,45)';
+borderColors['orange'] = 'orange'; //'rgb(198,93,40)';
+borderColors['red'] = 'red'; //'rgb(219,54,39)';
 borderColors['purple'] = 'rgb(175,96,166)';
 
 var showActiveClicked = true;
@@ -345,7 +350,7 @@ function sketchUpdate (username, dataURL) {
 	var tile = $('#' + username);
 	if (tile.length !== 0) {
 		tile.attr('src', dataURL);
-		if (username == viewingTile) canvasImg.attr('src', dataURL);
+		//if (username == viewingTile) canvasImg.attr('src', dataURL);
 	}
 }
 
@@ -388,11 +393,11 @@ function addTileToView (username, tribe, active) {
 	var tile = $('<img class=tile></canvas>');
 	tile.attr('id', username);
 	
-	//tile.attr('src', canvas0[0].toDataURL());
-
 	tile.css('border-color', borderColors[tribe]);
 	tCont.append(tile);
-
+	refreshTileSizes();
+	
+	/* buggy with no time to debug so removed from submitted version
 	tile.click(function(e){
 		var username = $(this).attr('id');
 		if (getTileIndex(username) === -1) {
@@ -408,6 +413,7 @@ function addTileToView (username, tribe, active) {
 		}
 		viewingTile = username;
 	});
+	*/
 }
 
 function getTileIndex (username) {
@@ -533,7 +539,7 @@ canvas0.on('touchleave', function(e){findxy('out',  e.originalEvent.changedTouch
 canvas0.on('touchend',   function(e){findxy('up',   e.originalEvent.changedTouches[0])});
 
 $(document).on('mouseup pointerup', function(e){ drawing = false; })
-$(document).on('mousemove pointermove touchmove', function(e){
+$(document).on('mousemove pointermove', function(e){
 	if (drawing === true) findxy('move', e.originalEvent);
 });
 
@@ -592,7 +598,7 @@ function push(){
 	if (step > undolimit){
 		step = undolimit;
 		trackimage.shift();
-	}
+	}	
 }
 
 /******************************
@@ -600,7 +606,7 @@ function push(){
  ******************************/
 
 $('.colorbtn').click(function(e){
-	color = $(this).attr('id');
+	color = borderColors[$(this).attr('id')];
 	setMode (drawBtn);
 });
 
@@ -653,7 +659,7 @@ $('#btn_clear').click(function(e){
 			ctx.fillStyle = 'white';
 			ctx.fillRect(0, 0, canvas0[0].width, canvas0[0].height);
 			ctx.fill(); //clear canvas
-			canvasImg.attr('src', canvas0[0].toDataURL());
+			//canvasImg.attr('src', canvas0[0].toDataURL());
 		}, 300);
 		
 		send('sketch');
@@ -693,6 +699,13 @@ $('#btn_post').click(function(e){
 	}
 });
 
+$('#btn_close').click(function(e){
+	if (confirm('Are you sure you want to permanently leave this room?')) {
+		socket.emit('leaveRoom');
+		window.location.replace('/');
+	}
+});
+
 $('#btn_save_all').click(function(e){
 	var picsHTML = $('#pics')[0];
 	$('.tile').each(function() {
@@ -724,10 +737,10 @@ function changeTribe (obj, oldTribe, newTribe) {
 	obj.css('background-image', newAddr);
 }
 
-// window.addEventListener("beforeunload", function (e) {
-//   var confirmationMessage = 'Are you sure you want to leave this room?';
-//   e.returnValue = confirmationMessage;
-//   return confirmationMessage;
-// });
+window.addEventListener("beforeunload", function (e) {
+	var confirmationMessage = 'Are you sure you want to leave this room?';
+	e.returnValue = confirmationMessage;
+	return confirmationMessage;
+});
 
 }, false)

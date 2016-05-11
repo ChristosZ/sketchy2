@@ -131,16 +131,13 @@ Room.prototype.addSketch = function(userName, dataURL, notes) {
   };
 
 function getUser (socket) {
-
 	if(rooms[socket.room] !== undefined) {
 
-
-  	var room = socket.room;
-  	user = _.find(rooms[room].people, function(u) {return u.id === socket.id});
-  	return user;
-  	} else 
-  	{return null;}
-
+		var room = socket.room;
+		user = _.find(rooms[room].people, function(u) {return u.id === socket.id});
+		return user;
+  	}
+	else return null;
 };
 
 //SOCKETS
@@ -165,6 +162,10 @@ io.sockets.on('connection', function(socket) {
 		if(!(_.find(rooms, function(r) {return r.name === roomName}) === undefined)) {
 			//if room already exists
 			socket.emit('alert', "This room name is taken. Please try a different one.");
+		} else if(userName.trim().length == 0) {
+			socket.emit('alert', "Please provide a username.");
+		} else if(roomName.trim().length == 0) {
+			socket.emit('alert', "Please provide a room name.");
 		} else {
 			var room = new Room(roomName, tribe, userName);
 			var host = new User(userName, tribe);
@@ -189,13 +190,14 @@ io.sockets.on('connection', function(socket) {
 	socket.on('joinRoom', function(roomName, userName, tribe) {
 
 		//check if the userName is valid, if roomName exists
-		//console.log(tribe);
 		if(!(_.find(rooms[roomName].people, function(u) {return u.name === userName}) === undefined)) {
 			//notify user to try a different username 
 			socket.emit('alert', "This username is taken in this room. Please try a different room or username.");
+		} else if(userName.trim().length == 0) {
+			socket.emit('alert', "Please provide a username.");
 		} else {
 			var user = new User(userName, tribe);
-			console.log(roomName);
+			//console.log(roomName);
 			rooms[roomName].people[userName] = user;
 			socket.emit('redirect', '/' + roomName + '/' + userName);
 		}
@@ -216,7 +218,7 @@ io.sockets.on('connection', function(socket) {
 		if (user.disconnected === true) {
 			socket.emit('restart', user.tribe, user.sketch);
 		} else {
-			console.log(user.tribe);
+			//console.log(user.tribe);
 			socket.emit('start', user.tribe);
 		}
 		
@@ -224,7 +226,6 @@ io.sockets.on('connection', function(socket) {
 			var sketch = {user: val.name, sketch: val.sketch, tribe: val.tribe};
 			socket.emit('userJoined', val.name, val.tribe);
 			socket.emit('sketchUpdated', sketch);
-			console.log('emitting');
 		});
 		
 		_.each(rooms[socket.room].submitted, function(val, key, obj) {
@@ -255,33 +256,32 @@ io.sockets.on('connection', function(socket) {
 
 		if(rooms[socket.room] !== undefined){
 
-		//if this is the last person, remove the room totally
-		if (rooms[socket.room].people.length === 1) {
+			//if this is the last person, remove the room totally
+			if (rooms[socket.room].people.length === 1) {
 			
-			delete rooms[socket.room];
-			io.sockets.emit('roomRemoved', roomName);
+				delete rooms[socket.room];
+				io.sockets.emit('roomRemoved', roomName);
 
-		} else {
+			} else {
 
-			delete rooms[socket.room].people[user.name];
+				delete rooms[socket.room].people[user.name];
 			
-			socket.leave(socket.room);
-			io.to(room).emit("userLeft", user.name);
-		}
+				io.to(socket.room).emit("userLeft", user.name);
+				socket.leave(socket.room);
+			}
 		}
 	});
 
 	socket.on('disconnect', function(){
-		
 		//check to see if the socket was in a room 
-
 		if (rooms[socket.room] === undefined) {
 			//this user was not in a room yet, so their socket can be forgotten
 		} else {
- 
 			var user = getUser(socket);
-			user.id = '';
-			user.disconnected = true; 
+			if (user != undefined) {
+				user.id = '';
+				user.disconnected = true;
+			}
 	}
 
 	});
