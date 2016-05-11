@@ -218,7 +218,6 @@ io.sockets.on('connection', function(socket) {
 		if (user.disconnected === true) {
 			socket.emit('restart', user.tribe, user.sketch);
 		} else {
-			//console.log(user.tribe);
 			socket.emit('start', user.tribe);
 		}
 		

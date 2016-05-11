@@ -68,12 +68,10 @@ socket.on('userJoined', function(name, tribe){
 });
 
 socket.on('tribeUpdated', function(name, tribe) {
-
 	tileChange(name, tribe, true);
 });
 
 socket.on('sketchSubmitted', function(data) {
-
 	tileAdd(data.user, data.tribe, false);
 	//should add the final sketch as a tile
 });
@@ -82,7 +80,6 @@ socket.on('sketchUpdated', function(data) {
 	tileAdd(data.user, data.tribe, true);
 	canvasImg.attr('src', data.sketch);
 	canvasImg.fadeIn(300);
-
 });
 
 socket.on('userLeft', function(data) {
@@ -95,7 +92,6 @@ socket.on('alert', function(text) {
 
 
 socket.on('start', function(newTribe){
-	
 	var i = tribes.indexOf(newTribe);
 	for (n = 0; n < i; n++) {
 		$('#btn_tribes').click();
@@ -105,7 +101,6 @@ socket.on('start', function(newTribe){
 });
 
 socket.on('restart', function(tribe, sketch) {
-
 	var i = tribes.indexOf(newTribe);
 	for (n = 0; n < i; n++) {
 		$('#btn_tribes').click();
@@ -146,7 +141,7 @@ $(window).resize(function() {
     	canvas0[0].width = canvas0[0].offsetWidth;
 	    canvas0[0].height = canvas0[0].offsetHeight;
         var newtrack = new Image();
-		newtrack.src = trackimage[trackimage.length-1];
+		newtrack.src = (trackimage[trackimage.length-1] === undefined) ? 'img/blue/tribe.svg' : trackimage[trackimage.length-1];
 		ctx.clearRect(0, 0, canvas0[0].width, canvas0[0].height);
 		newtrack.onload = function() {ctx.drawImage(newtrack,0,0,canvas0[0].width,canvas0[0].height);}
     }, 250);
@@ -855,7 +850,7 @@ $('#btn_undo').click(function(e){
 	if (step > 0){
 		step--;
 		var oldtrack = new Image();
-		oldtrack.src = trackimage[step];
+		oldtrack.src = (trackimage[step] === undefined) ? 'img/blue/tribe.svg' : trackimage[step];
 
 		var dURL = trackimage[step];
 		socket.emit('updateSketch', dURL);
@@ -873,7 +868,7 @@ $('#btn_redo').click(function(e){
 	if (step < trackimage.length-1){
 			step++;
 			var newtrack = new Image();
-			newtrack.src = trackimage[step];
+			newtrack.src = (trackimage[step] === undefined) ? 'img/blue/tribe.svg' : trackimage[step];
 			var dURL = trackimage[step];
 			socket.emit('updateSketch', dURL);
 			ctx.clearRect(0, 0, canvas0[0].width, canvas0[0].height);
